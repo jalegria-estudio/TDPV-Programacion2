@@ -9,6 +9,8 @@ TagManager:
   - tFloor
   - tPath
   - tAbyss
+  - tPlayer
+  - tWall
   layers:
   - Default
   - TransparentFX
@@ -16,11 +18,11 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - lPlatforms
+  - lEnemies
+  - lPlayer
+  - lWall
+  - lPaths
   - 
   - 
   - 
@@ -43,6 +45,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1475034213
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Foreground
+    uniqueID: 1454129483
+    locked: 0
+  - name: HUD
+    uniqueID: 1824584537
     locked: 0
