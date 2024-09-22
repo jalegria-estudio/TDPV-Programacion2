@@ -58,7 +58,7 @@ namespace Toolbox //Incluir a la caja de herramientas las funciones que se neces
         /// <summary>
         /// Crea un raycast a partir de una bounding box. El beam sale desde afuera de la caja a partir de las coords del centro.
         /// </summary>
-        public static RaycastHit2D CreateRaycastHitFrom(Bounds p_boundingBox, Direction p_rayDirection, float p_rayDistance = m_rayDistDefault)
+        public static RaycastHit2D CreateRaycastHitFrom(Bounds p_boundingBox, Direction p_rayDirection, float p_rayDistance = m_rayDistDefault, int p_layerMask = Physics2D.DefaultRaycastLayers)
         {
             Vector2 l_origin = p_boundingBox.center;
             Vector2 l_dir = Vector2.zero;
@@ -86,18 +86,44 @@ namespace Toolbox //Incluir a la caja de herramientas las funciones que se neces
                     break;
             }
 
-            return CreateRaycastHit(l_origin, l_dir, p_rayDistance);
+            return CreateRaycastHit(l_origin, l_dir, p_rayDistance, p_layerMask);
         }
 
         /// <summary>
         /// Wrapper Physics2D.Raycast - Crea un raycast - My Galactic Beam Caster :)
         /// </summary>
-        public static RaycastHit2D CreateRaycastHit(Vector2 p_origin, Vector2 p_direction, float p_distance = m_rayDistDefault)
+        /// <remarks>
+        /// LAYERMASK => USADO PARA FILTRAR RAYCAST
+        /// Specifies Layers to use in a Physics.Raycast.
+        /// A GameObject can use up to 32 LayerMasks supported by the Editor.
+        /// The first 8 of these Layers are specified by Unity; the following 24 are controllable by the user. 
+        /// Bitmasks represent the 32 Layers and define them as true or false. 
+        /// Each bitmask describes whether the Layer is used.As an example, bit 5 can be set to 1 (true).
+        /// This will allow the use of the built-in Water setting.
+        /// https://docs.unity3d.com/ScriptReference/LayerMask.html => bitmask => 0b0001
+        /// https://docs.unity3d.com/ScriptReference/Physics2D.Raycast.html => raycast()
+        /// public static RaycastHit2D Raycast(Vector2 origin, Vector2 direction, float distance = Mathf.Infinity, int layerMask = DefaultRaycastLayers, float minDepth = -Mathf.Infinity, float maxDepth = Mathf.Infinity);
+        /// </remarks>
+        public static RaycastHit2D CreateRaycastHit(Vector2 p_origin, Vector2 p_direction, float p_distance = m_rayDistDefault, int p_layerMask = Physics2D.DefaultRaycastLayers)
         {
-            RaycastHit2D l_raycastHit = Physics2D.Raycast(p_origin, p_direction, p_distance);
+            RaycastHit2D l_raycastHit = Physics2D.Raycast(p_origin, p_direction, p_distance, p_layerMask);
             Debug.DrawRay(p_origin, p_direction * p_distance);
 
             return l_raycastHit;
+        }
+    }
+
+    public class RenderingTools
+    {
+        /// <summary>
+        /// Resize a sprite scale
+        /// </summary>
+        public static void ChangeSpriteScale(SpriteRenderer p_sprtRndr, Vector2 p_newRelativeScale)
+        {
+            Vector2 l_currentScale = p_sprtRndr.transform.localScale;
+            Debug.Log("Change scale -> Before: " + l_currentScale);
+            p_sprtRndr.transform.localScale = Vector2.Scale(l_currentScale, p_newRelativeScale);
+            Debug.Log("Change scale -> After: " + p_sprtRndr.transform.localScale);
         }
     }
 }
