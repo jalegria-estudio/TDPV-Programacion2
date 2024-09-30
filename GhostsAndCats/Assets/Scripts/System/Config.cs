@@ -5,12 +5,18 @@
         internal const string GAME_NAME = "Ghost 'n Cats";
         internal const float RAYCAST_OFFSET = 0.01f; //<(i) For it doesn't collide with selft objectselftobject
         internal const float RAYCAST_LENG_DEFAULT = .1f;
-        internal const float PLAYER_JUMP_IMPULSE = 7.0f;
-        internal const float PLAYER_JUMP_IMPULSE_UP = .5f;//<(i) Factor
-        internal const float PLAYER_WALK_SPEED = 5.0f;
-        internal const float PLAYER_WALK_SPEED_UP = 2.0f;//<(i) Factor
-        internal const float PLAYER_WALK_SPEED_DUCKING = .1f;//<(i) Factor
-        internal const float PLAYER_DUCKING_SCALE = .5f;//<(i) Factor
+        internal const float PLAYER_JUMP_IMPULSE = 6.8f;
+        internal const float PLAYER_JUMP_IMPULSE_UP = 0.25f;//<(i) Factor. Put in zero to null double-jump
+        internal const float PLAYER_MASS = 1.0f;
+        internal const float PLAYER_DRAG_LINEAL = 1.1f;
+        internal const float PLAYER_WALK_SPEED = 2.0f;
+        internal const float PLAYER_WALK_RUN_FACTOR = 5.0f;//<(i) Factor
+        internal const float PLAYER_WALK_DUCK_FACTOR = .25f;//<(i) Factor
+        internal const float PLAYER_DUCK_SCALE = .5f;//<(i) Factor
+        internal const float PLAYER_UNDUCK_SCALE = 2.0f;//<(i) Factor
+        internal const float PLAYER_SPAWN_POSX_DEFAULT = .0f;
+        internal const float PLAYER_SPAWN_POSY_DEFAULT = -3.5f;
+        internal const float ITEM_DISAPPEAR_TIME = 10.0F;
     }
 }
 
