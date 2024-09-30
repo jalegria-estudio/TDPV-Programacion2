@@ -126,4 +126,25 @@ namespace Toolbox //Incluir a la caja de herramientas las funciones que se neces
             Debug.Log("Change scale -> After: " + p_sprtRndr.transform.localScale);
         }
     }
+
+    public class AnimationTools
+    {
+        public static bool isPlaying(Animator p_animator, string p_animeName)
+        {
+            AnimatorStateInfo l_currentState = p_animator.GetCurrentAnimatorStateInfo(0);
+            bool l_state = l_currentState.IsName(p_animeName);
+            return l_state;
+        }
+
+        /// <summary>
+        /// Get normalized time of current animation state
+        /// </summary>
+        /// <remarks>Wrapper - AnimatorStateInfo.normalizedTime</remarks>
+        /// <returns>The normalized time is a progression ratio. The integer part is the number of times the State has looped. The fractional part is a percentage (0-1) that represents the progress of the current loop. For example, a normalized time of 2.5 means that the State has looped twice (2) and has progressed halfway (50% or .5) through its third loop.</returns>
+        public static float getAnimeCurrentTime(Animator p_animator)
+        {
+            AnimatorStateInfo l_currentState = p_animator.GetCurrentAnimatorStateInfo(0);
+            return l_currentState.normalizedTime;
+        }
+    }
 }

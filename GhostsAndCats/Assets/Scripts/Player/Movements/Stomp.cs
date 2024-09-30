@@ -16,7 +16,8 @@ namespace Movements
             Debug.Log($"<DEBUG> Stomp to game-object name:{p_collider} Tag: {p_collider.tag}");
             //this.gameObject.GetComponent<PlayerInputHandler>().Plop(5.0f);
             Moves.Plop(p_rigidBody, 5.0f);
-            p_collider.gameObject.SetActive(false);
+            //p_collider.gameObject.SetActive(false);
+            p_collider.gameObject.GetComponent<Enemy>().OnDefeat();
         }
     }
 }

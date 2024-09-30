@@ -37,8 +37,9 @@ public class InputController : MonoBehaviour
     // Update is called once per frame [fixed intervale]
     protected void FixedUpdate()
     {
-        if (m_JumpManager.enabled)
+        if (m_JumpManager.enabled) //<(i) I disassembled the if-conditions for clarity only
             m_JumpManager.HandleInput(m_inputPlayerVertical);
+
         if (m_WalkManager.enabled)
             m_WalkManager.HandleInput(m_inputPlayerHorizontal);
     }

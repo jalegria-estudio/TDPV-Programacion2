@@ -6,6 +6,9 @@ namespace Managers
 {
     public class JumpManager : MonoBehaviour
     {
+        //** Observer pattern => Managing Game Events with the Event Bus
+        public event System.Action EVT_JUMP;
+
         [Header("CONFIGURATION")]
         [SerializeField] protected float m_impulse = Config.PLAYER_JUMP_IMPULSE;
         [SerializeField] protected float m_impulseUp = Config.PLAYER_JUMP_IMPULSE_UP;
@@ -18,7 +21,7 @@ namespace Managers
         public bool Jumped { get { return m_jumped; } }
         public bool DoubleJumped { get { return m_doubleJumped; } }
 
-        private void Start()
+        protected void Start()
         {
             m_rigidBody = this.GetComponent<Rigidbody2D>();
         }
@@ -38,6 +41,7 @@ namespace Managers
             {
                 Moves.Jump(m_rigidBody, m_impulse);
                 m_jumped = true;
+                EVT_JUMP?.Invoke();
             }
             //<(i) Double Jump!
             else if (m_jumped && !m_doubleJumped && p_verticalInput == 1)
@@ -54,4 +58,4 @@ namespace Managers
             return m_jumped;
         }
     }
-}
+}//namespace Managers

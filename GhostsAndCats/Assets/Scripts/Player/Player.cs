@@ -1,17 +1,24 @@
-﻿using Movements;
+﻿using Managers;
+using Movements;
+using Settings;
 using UnityEngine;
 
-[RequireComponent(typeof(InputController))]
+[RequireComponent(typeof(InputController), typeof(AnimeManager), typeof(AudioManager))]
 public class Player : MonoBehaviour
 {
+    ///// EVENT ACTIONS /////
     //** Observer pattern => Managing Game Events with the Event Bus
-    public event System.Action EVT_PLAYER_DAMAGED;
-    public event System.Action EVT_ENEMY_STOMPED;
+    public event System.Action EVT_STOMP;
 
-    [Header("CONFIG")]
+    ///// CONFIG INSPECTOR /////
+    [Header("Configuration")]
+    [SerializeField] protected bool m_damaged = false;
     [SerializeField] protected int m_lifes = 5;
-    [SerializeField] protected Vector2 m_spawnPosition = Vector2.zero;
+    [SerializeField] protected Vector2 m_spawnPosition = new Vector2(Config.PLAYER_SPAWN_POSX_DEFAULT, Config.PLAYER_SPAWN_POSY_DEFAULT);
     ///[SerializeField] protected EnemyGenericDamage m_enemy; //<(i) Observer Pattern <= Obsolete
+    protected InputController m_inputController = null;
+    protected AnimeManager m_animeManager = null;
+    protected AudioManager m_audioManager = null;
 
     public int Lifes { get => m_lifes; }
     public void RemoveLifes(int p_qty = 1)
@@ -25,23 +32,25 @@ public class Player : MonoBehaviour
         m_lifes += p_qty;
     }
 
-    protected InputController m_inputController = null;
+    public bool isDefeated()
+    {
+        return m_lifes == 0;
+    }
 
-    // Start is called before the first frame update
+    // Start is called before the first frame update: Start is only ever called once for a given script.
+    //Source: https://docs.unity3d.com/Manual/ExecutionOrder.html
     protected void Start()
     {
-        m_inputController = new InputController();
+        m_inputController = this.GetComponent<InputController>();
+        m_animeManager = this.GetComponent<AnimeManager>();
+        m_audioManager = this.GetComponent<AudioManager>();
     }
 
     // Update is called once per frame [variable intervale]
     protected void Update()
     {
-
-    }
-
-    protected void FixedUpdate()
-    {
-
+        m_damaged = m_animeManager.isPlaying("Damage");
+        DisableWhenDamaged();
     }
 
     //Sent when another object enters a trigger collider attached to this object (2D physics only).
@@ -66,10 +75,13 @@ public class Player : MonoBehaviour
 
             if (l_contactPoint.normal == Vector2.up)
                 HandleStompCollision(l_contactPoint);
-            //EVT_ENEMY_STOMPED?.Invoke(); //<(e) The ?. operator makes it ensures that "subject" doesn't attempt to raise the event when there are no subscribers to that event.
             else
                 HandleEnemyDamageCollision(l_contactPoint);
-            //EVT_PLAYER_DAMAGED?.Invoke(); // Debug.Log($"<DEBUG> {this.name} > event invoked: EVT_PLAYER_DAMAGED");
+        }
+
+        if (p_collision.collider.CompareTag("tItem"))
+        {
+            m_audioManager.OnCollectSfx();
         }
     }
 
@@ -82,6 +94,7 @@ public class Player : MonoBehaviour
             return false;
 
         Moves.Stomp(this.GetComponent<Rigidbody2D>(), p_contactPoint.collider);
+        EVT_STOMP?.Invoke();
         return true;
     }
 
@@ -94,6 +107,7 @@ public class Player : MonoBehaviour
             return false;
 
         OnDamaged();
+
         return true;
     }
 
@@ -103,9 +117,35 @@ public class Player : MonoBehaviour
     protected void OnDamaged()
     {
         RemoveLifes();
-        transform.position = m_spawnPosition;
+        if (isDefeated())
+        {
+            m_audioManager.OnDefeatSfx();
+            m_animeManager.HandleDefeat();
+            m_damaged = true;
+        }
+        else
+        {
+            m_audioManager.OnDamageSfx();
+            m_animeManager.HandleDamage();
+            m_damaged = true;
+            transform.position = m_spawnPosition;
+        }
+    }
+
+    protected void DisableWhenDamaged()
+    {
+        m_inputController.enabled = !m_damaged && !isDefeated();
+
+        if (!m_damaged & !isDefeated())
+            m_animeManager.HandleInput();
     }
 }
+
+////////////////////////////////////////////////////////////
+//
+// Extensive Personal Documentation Notes
+//
+////////////////////////////////////////////////////////////
 
 /**
  * CONCEPTO FUNDAMENTAL(!)
@@ -151,6 +191,8 @@ public class Player : MonoBehaviour
  * This pattern loosely decouples the subject, which doesn’t really know the observers or care what they do once they receive the signal.
  * While the observers have a dependency on the subject, the observers themselves don’t know about each other.
  * 
+ *             //EVT_ENEMY_STOMPED?.Invoke(); //<(e) The ?. operator makes it ensures that "subject" doesn't attempt to raise the event when there are no subscribers to that event. 
+ *             
  * Source: 
  * Game Development Patterns with Unity 2021 => chapter 6 Managing Game Events with the Event Bus
  * https://unity.com/resources/design-patterns-solid-ebook

@@ -6,6 +6,10 @@ namespace Managers
 {
     public class WalkManager : MonoBehaviour
     {
+        ///// EVENTS ACTIONS /////
+        public System.Action<bool> EVT_DUCK;
+
+        ///// INSPECTOR CONFIGURATION /////
         [Header("CONFIGURATION")]
         [SerializeField] protected float m_walkSpeed = Config.PLAYER_WALK_SPEED;
         [SerializeField] protected float m_runSpeed = Config.PLAYER_WALK_SPEED * Config.PLAYER_WALK_RUN_FACTOR;
@@ -14,6 +18,7 @@ namespace Managers
         [SerializeField] protected float m_unduckScale = Config.PLAYER_UNDUCK_SCALE;
         protected Rigidbody2D m_rigidBody = null;
         protected SpriteRenderer m_spriteRenderer = null;
+
         protected bool m_run = false;
         protected bool m_duck = false;
         protected bool m_ducked = false;
@@ -46,13 +51,31 @@ namespace Managers
 
         protected bool canDuck()
         {
-            //return !m_ducked && (transform.localScale.y == 1) && (m_rigidBody.velocity.y == 0);
-            return m_duck && !m_ducked && (m_rigidBody.velocity.y == 0);
+            return m_duck && (m_rigidBody.velocity.y == 0);
         }
 
         protected bool canUnduck()
         {
-            //return m_ducked && transform.localScale.y < 1.0f;
+            //<(e) Check if sprite is colliding with platform with normal-up
+            if (gameObject.GetComponents<Collider2D>()[1].enabled)
+            {
+                Collider2D l_collider = gameObject.GetComponents<Collider2D>()[1];
+                ContactFilter2D l_filter = new ContactFilter2D();
+                l_filter.SetLayerMask(LayerMask.GetMask("lplatforms"));
+                ContactPoint2D[] l_contacts = new ContactPoint2D[4];
+                int l_found = l_collider.GetContacts(l_contacts);
+                if (l_found > 0)
+                {
+                    for (int i = 0; i < l_contacts.Length; i++)
+                    {
+                        if (l_contacts[i].collider != null && l_contacts[i].collider.CompareTag("tPlatform") && l_contacts[i].normal == Vector2.down)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
             return !m_duck && m_ducked;
         }
 
@@ -63,32 +86,36 @@ namespace Managers
 
         protected void walk(float p_horizontalInput)
         {
-            Moves.Walk(m_rigidBody, m_walkSpeed, p_horizontalInput);
+            if (m_ducked)
+                duck(p_horizontalInput);
+            else
+                Moves.Walk(m_rigidBody, m_walkSpeed, p_horizontalInput);
         }
 
         protected void run(float p_horizontalInput)
         {
-            Moves.Walk(m_rigidBody, m_runSpeed, p_horizontalInput);
+            Moves.Run(m_rigidBody, m_runSpeed, p_horizontalInput);
         }
 
         protected void duck(float p_horizontalInput)
         {
             if (!m_ducked)
             {
-                Moves.DuckRenderer(m_spriteRenderer, m_duckScale);
+                Moves.DuckRenderer(gameObject.GetComponents<BoxCollider2D>());
                 m_ducked = true;
+                EVT_DUCK?.Invoke(m_ducked);
             }
-            m_rigidBody.mass = 1.5f;
-            m_rigidBody.AddForce(new Vector2(m_duckSpeed * p_horizontalInput, 0));
-            //Moves.Duck(m_rigidBody, m_duckSpeed, p_horizontalInput);
+
+            Moves.Duck(m_rigidBody, m_duckSpeed, p_horizontalInput);
         }
 
         protected void unduck(float p_horizontalInput)
         {
             m_rigidBody.mass = 1;
             Moves.Unduck(m_rigidBody, m_walkSpeed, p_horizontalInput);
-            Moves.UnduckRenderer(m_spriteRenderer, m_unduckScale);
+            Moves.UnduckRenderer(gameObject.GetComponents<BoxCollider2D>());
             m_ducked = false;
+            EVT_DUCK?.Invoke(m_ducked);
         }
     }
-}
+}//namespace Managers
