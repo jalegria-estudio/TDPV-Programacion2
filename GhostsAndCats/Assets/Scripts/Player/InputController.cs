@@ -32,6 +32,8 @@ public class InputController : MonoBehaviour
         m_WalkManager.Run = Input.GetKey(KeyCode.Q);
         m_WalkManager.Duck = Input.GetKey(KeyCode.DownArrow);
         m_JumpManager.Jump = Input.GetKey(KeyCode.UpArrow);
+
+        OnPressHelp();
     }
 
     // Update is called once per frame [fixed intervale]
@@ -42,5 +44,17 @@ public class InputController : MonoBehaviour
 
         if (m_WalkManager.enabled)
             m_WalkManager.HandleInput(m_inputPlayerHorizontal);
+    }
+
+    protected void OnPressHelp()
+    {
+        if (!Input.GetKeyDown(KeyCode.H))
+            return;
+
+        Canvas l_rules = GameObject.FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+
+        if (l_rules && l_rules.CompareTag("tRules"))
+            l_rules.enabled = !l_rules.enabled;
+
     }
 }

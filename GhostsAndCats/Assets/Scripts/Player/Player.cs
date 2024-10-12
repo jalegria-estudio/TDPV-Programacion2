@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     ///// EVENT ACTIONS /////
     //** Observer pattern => Managing Game Events with the Event Bus
     public event System.Action EVT_STOMP;
+    public event System.Action EVT_GOAL;
 
     ///// CONFIG INSPECTOR /////
     [Header("Configuration")]
@@ -58,9 +59,21 @@ public class Player : MonoBehaviour
     {
         Debug.Log($"<DEBUG> {this.name} > Entered on trigger game-object: Name->{p_collider.name}. Tag->{p_collider.tag}");
 
-        if (p_collider.isTrigger && p_collider.CompareTag("tAbyss"))
+        if (p_collider.isTrigger)
         {
-            OnDamaged();
+            switch (p_collider.tag)
+            {
+                case "tAbyss":
+                    OnDamaged();
+                    break;
+                case "tGoal":
+                    OnGoal();
+                    break;
+                default:
+                    break;
+            }
+
+
         }
     }
 
@@ -77,11 +90,6 @@ public class Player : MonoBehaviour
                 HandleStompCollision(l_contactPoint);
             else
                 HandleEnemyDamageCollision(l_contactPoint);
-        }
-
-        if (p_collision.collider.CompareTag("tItem"))
-        {
-            m_audioManager.OnCollectSfx();
         }
     }
 
@@ -138,6 +146,11 @@ public class Player : MonoBehaviour
 
         if (!m_damaged & !isDefeated())
             m_animeManager.HandleInput();
+    }
+
+    protected void OnGoal()
+    {
+        EVT_GOAL?.Invoke();
     }
 }
 

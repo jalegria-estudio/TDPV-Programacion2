@@ -8,7 +8,6 @@ namespace Managers
         [SerializeField] AudioClip m_sfxJump = null;
         [SerializeField] AudioClip m_sfxDefeat = null;
         [SerializeField] AudioClip m_sfxDamage = null;
-        [SerializeField] AudioClip m_sfxCollect = null;
         [SerializeField] AudioClip m_sfxStomp = null;
 
         protected Rigidbody2D m_rigidBody = null;
@@ -74,11 +73,6 @@ namespace Managers
         public void OnDefeatSfx()
         {
             this.Play(m_sfxDefeat);
-        }
-
-        public void OnCollectSfx()
-        {
-            this.Play(m_sfxCollect);
         }
     }
 } //namespace Managers

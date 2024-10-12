@@ -25,6 +25,7 @@ namespace Managers
         protected float m_speed = .0f;
 
         public bool Run { get => m_run; set => m_run = value; }
+
         public bool Duck { get => m_duck; set => m_duck = value; }
 
         private void Start()
@@ -41,25 +42,31 @@ namespace Managers
         {
             if (canRun())
                 run(p_horizontalInput);
-            else if (canDuck())
+            else if (CanDuck())
                 duck(p_horizontalInput);
-            else if (canUnduck())//<(i) Only Debug: if (Input.GetKey(KeyCode.Z))
+            else if (CanUnduck())//<(i) Only Debug: if (Input.GetKey(KeyCode.Z))
                 unduck(p_horizontalInput);
             else
                 walk(p_horizontalInput);
         }
 
-        protected bool canDuck()
+        //
+        // Summary:
+        //    Indicate if the sprite is on condition to duck transform
+        protected bool CanDuck()
         {
             return m_duck && (m_rigidBody.velocity.y == 0);
         }
 
-        protected bool canUnduck()
+        //
+        // Summary:
+        //    <(!) Platform distance between sides to ducking It must be minor than 0.5 size.
+        protected bool CanUnduck()
         {
             //<(e) Check if sprite is colliding with platform with normal-up
             if (gameObject.GetComponents<Collider2D>()[1].enabled)
             {
-                Collider2D l_collider = gameObject.GetComponents<Collider2D>()[1];
+                Collider2D l_collider = gameObject.GetComponents<Collider2D>()[1];//Duck Collider == 2nd Collider
                 ContactFilter2D l_filter = new ContactFilter2D();
                 l_filter.SetLayerMask(LayerMask.GetMask("lplatforms"));
                 ContactPoint2D[] l_contacts = new ContactPoint2D[4];
