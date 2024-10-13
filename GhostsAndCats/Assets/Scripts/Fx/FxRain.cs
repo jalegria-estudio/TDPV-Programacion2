@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Rain FX Script
+/// </summary>
 public class FxRain : MonoBehaviour
 {
     [Header("Configuration")]
@@ -12,7 +15,11 @@ public class FxRain : MonoBehaviour
     protected float m_lapsetime = 0.0f;
     protected float m_rainSfxVolume = 1;
     protected bool m_isRaining = false;
-    public bool IsRaining { get => m_isRaining; set => m_isRaining = value; }
+
+    /// <summary>
+    /// Indicate if RainFX is active
+    /// </summary>
+    public bool IsRaining { get => m_isRaining; protected set => m_isRaining = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -51,6 +58,9 @@ public class FxRain : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Basic FadeIn Volume for rain's SFX
+    /// </summary>
     void FadeInUpdaterVolume()
     {
         if (m_jukebox.volume < m_rainSfxVolume)
@@ -59,6 +69,9 @@ public class FxRain : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Basic FadeOut Volume for rain's SFX
+    /// </summary>
     void FadeOutUpdaterVolume()
     {
         if (m_jukebox.volume > 0.0f)

@@ -6,6 +6,7 @@ namespace System.Game.States
     {
         GameObject m_player = null;
         readonly GameManager m_gameManager = null;
+
         //Constructor because it not use MonoBehaviour
         public StatePause(GameManager p_gameManager)
         {

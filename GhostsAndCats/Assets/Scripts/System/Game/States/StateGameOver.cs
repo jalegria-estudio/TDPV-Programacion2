@@ -54,9 +54,12 @@ namespace System.Game.States
         // Fixed coded logic runs every frame. Note: include here a condition to transition to a new state
         public void Update()
         {
-
         }
-        // Gener
+
+        /// <summary>
+        /// Create a simple canvas text object
+        /// </summary>
+        /// <param name="p_text">Text to show</param>
         protected void SetTextCanvas(string p_text)
         {
             // Canvas Object

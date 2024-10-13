@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Rain FX Script
+/// </summary>
 [RequireComponent(typeof(Camera))]
 public class FxThunder : MonoBehaviour
 {
@@ -17,17 +20,19 @@ public class FxThunder : MonoBehaviour
     protected bool m_isThundering = false;
     [SerializeField] bool m_autoPlay = true;
     [SerializeField] bool m_random = true;
-    public bool IsThundering { get => m_isThundering; set => m_isThundering = value; }
+    protected int m_randomMultiplier = 3;
+
+    /// <summary>
+    /// Indicate if ThunderFX is active
+    /// </summary>
+    public bool IsThundering { get => m_isThundering; protected set => m_isThundering = value; }
 
     // Start is called before the first frame update
     void Start()
     {
-        //m_camera = GetComponent<Camera>();
         m_colorDefault = m_camera.backgroundColor;
         m_camera.clearFlags = CameraClearFlags.SolidColor;
-        //m_camera.backgroundColor = m_color;
-        //StartCoroutine(CoThrowThunder());
-        //InvokeRepeating(nameof(ThrowThunder), 1.0f, 0.1f);
+
         if (m_autoPlay)
             Play();
 
@@ -53,19 +58,16 @@ public class FxThunder : MonoBehaviour
                 m_jukebox?.PlayOneShot(m_thunderSfx);
 
             if (m_random)
-                m_lapse = Random.Range(m_lapseDefault, m_lapseDefault * 3);
+                m_lapse = Random.Range(m_lapseDefault, m_lapseDefault * m_randomMultiplier);
         }
-
-        //print(m_elapseTime);
-        //m_camera.clearFlags = CameraClearFlags.SolidColor;
-
     }
 
+    /// <summary>
+    /// Coroutine to throw a thunder GFX
+    /// </summary>
+    /// <returns></returns>
     IEnumerator CoThrowThunder()
     {
-        //m_camera.backgroundColor = m_color;
-        //yield return new WaitForSeconds(.1f);
-        //m_camera.backgroundColor = m_colorDefault;
         ThrowThunder();
         yield return new WaitForSeconds(.1f);
         ThrowThunder();
@@ -74,18 +76,27 @@ public class FxThunder : MonoBehaviour
         yield return new WaitForSeconds(.1f);
         ThrowThunder();
     }
+
+    /// <summary>
+    /// Execute a Thunder GFX
+    /// </summary>
     protected void ThrowThunder()
     {
         m_camera.backgroundColor = m_camera.backgroundColor == m_colorDefault ? m_color : m_colorDefault;
-        //m_camera.backgroundColor = m_colorDefault;
     }
 
+    /// <summary>
+    /// Iterative play the thunder FX 
+    /// </summary>
     public void Play()
     {
         m_isThundering = true;
         m_elapseTime = 0.0f;
     }
 
+    /// <summary>
+    /// Stop the thunder FX
+    /// </summary>
     public void Stop()
     {
         m_isThundering = false;

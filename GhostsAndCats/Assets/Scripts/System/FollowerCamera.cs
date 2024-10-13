@@ -16,6 +16,9 @@
 
 using UnityEngine;
 
+/// <summary>
+/// A simple script to follow a gameObject
+/// </summary>
 public class FollowerCamera : MonoBehaviour
 {
     ///// CONFIG INSPECTOR /////
@@ -51,6 +54,9 @@ public class FollowerCamera : MonoBehaviour
         //ShowDebugData();
     }
 
+    /// <summary>
+    /// Translate the camera position
+    /// </summary>
     protected void TranslateCamera()
     {
         float l_viewportHeightHalfSize = m_camera.orthographicSize;
@@ -81,6 +87,9 @@ public class FollowerCamera : MonoBehaviour
         m_camera.transform.position = l_cameraPos;
     }
 
+    /// <summary>
+    /// Show debug data only
+    /// </summary>
     protected void ShowDebugData()
     {
         /**
@@ -104,6 +113,10 @@ public class FollowerCamera : MonoBehaviour
         Debug.Log($"Camera Rectangle => {m_camera.rect}");
     }
 
+    /// <summary>
+    /// Set a new camera bounds
+    /// </summary>
+    /// <param name="p_cameraBounds"></param>
     public void SetBounds(Collider2D p_cameraBounds)
     {
         m_camera.gameObject.SetActive(false); //<(!) Reset camera view

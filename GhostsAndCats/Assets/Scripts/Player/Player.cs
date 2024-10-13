@@ -50,8 +50,8 @@ public class Player : MonoBehaviour
     // Update is called once per frame [variable intervale]
     protected void Update()
     {
-        m_damaged = m_animeManager.isPlaying("Damage");
-        DisableWhenDamaged();
+        m_damaged = m_animeManager.IsPlaying("Damage");
+        EnableActions();
     }
 
     //Sent when another object enters a trigger collider attached to this object (2D physics only).
@@ -72,8 +72,6 @@ public class Player : MonoBehaviour
                 default:
                     break;
             }
-
-
         }
     }
 
@@ -140,14 +138,21 @@ public class Player : MonoBehaviour
         }
     }
 
-    protected void DisableWhenDamaged()
+    /// <summary>
+    /// Enable Player for actions
+    /// </summary>
+    protected void EnableActions()
     {
-        m_inputController.enabled = !m_damaged && !isDefeated();
-
-        if (!m_damaged & !isDefeated())
+        if (!m_damaged && !isDefeated())
+        {
+            m_inputController.enabled = true;
             m_animeManager.HandleInput();
+        }
     }
 
+    /// <summary>
+    /// Trigger the Goal Event when player arrives to goal
+    /// </summary>
     protected void OnGoal()
     {
         EVT_GOAL?.Invoke();

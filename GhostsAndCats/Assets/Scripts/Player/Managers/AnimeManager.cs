@@ -1,4 +1,6 @@
+using Settings;
 using UnityEngine;
+
 
 namespace Managers
 {
@@ -44,6 +46,32 @@ namespace Managers
             m_inputV = Input.GetAxisRaw("Vertical");
         }
 
+        /// <summary>
+        /// Indicate if animation is playing
+        /// </summary>
+        /// <param name="p_animeName">Animation clip name</param>
+        /// <returns>boolean</returns>
+        public bool IsPlaying(string p_animeName)
+        {
+            AnimatorStateInfo l_currentState = m_animator.GetCurrentAnimatorStateInfo(Config.ANIMATOR_BASE_LAYER);
+            bool l_state = l_currentState.IsName(p_animeName);
+            return l_state;
+        }
+
+        /// <summary>
+        /// Reset animator parameters
+        /// </summary>
+        protected void resetParameters()
+        {
+            m_animator.SetInteger("pInputV", 0);
+            m_animator.SetInteger("pInputH", 0);
+            m_animator.SetInteger("pVelocityV", 0);
+            m_animator.SetBool("pDucked", false);
+        }
+
+        ///////////////////////////////////
+        /// OBSERVER PATTERN SUSCRIPTION
+        ///////////////////////////////////
         protected void subscribesToEvents()
         {
             if (gameObject.GetComponent<WalkManager>())
@@ -56,6 +84,9 @@ namespace Managers
                 gameObject.GetComponent<WalkManager>().EVT_DUCK -= HandleDuck;
         }
 
+        ///////////////////////////////////
+        /// ACTIONS HANDLER
+        ///////////////////////////////////
         public void HandleInput()
         {
             int l_anime = 0;
@@ -79,7 +110,6 @@ namespace Managers
 
         public void HandleDamage()
         {
-            //m_animator.Play("Base Layer.Damage");
             resetParameters();
             m_animator.SetTrigger("pDamaged");
         }
@@ -93,21 +123,6 @@ namespace Managers
         public void HandleDuck(bool p_ducked)
         {
             m_animator.SetBool("pDucked", p_ducked);
-        }
-
-        public bool isPlaying(string p_animeName)
-        {
-            AnimatorStateInfo l_currentState = m_animator.GetCurrentAnimatorStateInfo(0);
-            bool l_state = l_currentState.IsName(p_animeName);
-            return l_state;
-        }
-
-        protected void resetParameters()
-        {
-            m_animator.SetInteger("pInputV", 0);
-            m_animator.SetInteger("pInputH", 0);
-            m_animator.SetInteger("pVelocityV", 0);
-            m_animator.SetBool("pDucked", false);
         }
     }
 }//namespace Managers

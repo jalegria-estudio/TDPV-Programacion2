@@ -5,7 +5,7 @@ using static Cinemachine.DocumentationSortingAttribute;
 
 namespace System.Game
 {
-    public class LevelManager : MonoBehaviour // Equivalente BikeController
+    public class LevelManager : MonoBehaviour
     {
         [Header("Configuration")]
         protected int m_currentLevel = 0;
@@ -17,6 +17,7 @@ namespace System.Game
             get => m_currentLevel;
             set => m_currentLevel = value; //<(!) Danger code
         }
+
         // Start is called before the first frame update
         void Start()
         {
@@ -32,16 +33,29 @@ namespace System.Game
             Active(0);
         }
 
+        /// <summary>
+        /// Enable a game object level
+        /// </summary>
+        /// <param name="p_levelID">Level Index</param>
         public void Active(int p_levelID)
         {
             m_levels[p_levelID].SetActive(true);
         }
 
+        /// <summary>
+        /// Disable a game object level
+        /// </summary>
+        /// <param name="p_levelID">Level Index</param>
         public void Inactive(int p_levelID)
         {
             m_levels[p_levelID].SetActive(false);
         }
 
+        /// <summary>
+        /// Change the current level and return it (!!!) TO REFACTORING
+        /// </summary>
+        /// <param name="p_level">Variable to allocate the next level</param>
+        /// <returns>Game Object Level</returns>
         public bool NextLevel(out GameObject p_level)
         {
             if ((m_currentLevel + 1) < m_levels.Count)

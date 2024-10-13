@@ -17,6 +17,7 @@
         internal const float PLAYER_SPAWN_POSX_DEFAULT = .0f;
         internal const float PLAYER_SPAWN_POSY_DEFAULT = -3.5f;
         internal const float ITEM_DISAPPEAR_TIME = 10.0F;
+        internal const int ANIMATOR_BASE_LAYER = 0;
     }
 }
 

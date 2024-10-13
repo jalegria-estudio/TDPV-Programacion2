@@ -16,7 +16,6 @@ namespace Managers
         protected Animator m_animator = null;
         protected AudioSource m_audioSourcer = null;
 
-
         protected void Awake()
         {
             m_audioSourcer = this.gameObject.GetComponent<AudioSource>();
@@ -35,6 +34,10 @@ namespace Managers
                 l_jumper.EVT_JUMP -= OnJumpSfx;
             }
         }
+
+        /// <summary>
+        /// Suscribe to events of observer pattern
+        /// </summary>
         protected void configEvents()
         {
             ///Jump Event///
@@ -47,6 +50,12 @@ namespace Managers
             ///Stomp Event///
             this.gameObject.GetComponent<Player>().EVT_STOMP += OnStompSfx;
         }
+
+        /// <summary>
+        /// Play one-shot for a audio clip
+        /// </summary>
+        /// <param name="p_audio">Audio Clip Object</param>
+        /// <returns>Return false if audio source is playing other sound</returns>
         public bool Play(AudioClip p_audio)
         {
             if (m_audioSourcer.isPlaying)
@@ -55,6 +64,10 @@ namespace Managers
             m_audioSourcer.PlayOneShot(p_audio);
             return true;
         }
+
+        ///////////////////////////////////
+        /// ACTIONS SOUNDS
+        ///////////////////////////////////
 
         public void OnJumpSfx()
         {
@@ -70,6 +83,7 @@ namespace Managers
         {
             this.Play(m_sfxDamage);
         }
+
         public void OnDefeatSfx()
         {
             this.Play(m_sfxDefeat);

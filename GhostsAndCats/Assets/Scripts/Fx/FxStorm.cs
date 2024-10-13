@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Manage and synchronize RainFX and ThunderFX
+/// </summary>
 public class FxStorm : MonoBehaviour
 {
     [Header("Configuration")]

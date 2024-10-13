@@ -46,6 +46,9 @@ public class InputController : MonoBehaviour
             m_WalkManager.HandleInput(m_inputPlayerHorizontal);
     }
 
+    /// <summary>
+    /// Display info about player controls on screen
+    /// </summary>
     protected void OnPressHelp()
     {
         if (!Input.GetKeyDown(KeyCode.H))

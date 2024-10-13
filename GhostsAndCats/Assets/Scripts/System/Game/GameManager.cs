@@ -15,8 +15,6 @@ namespace System.Game
         protected GameStateMachine m_stateMachine = null;
         protected LevelManager m_levelManager = null;
         protected GameObject m_level = null;
-        protected const int m_QTY_LEVELS = 2;
-
 
         // Start is called before the first frame update
         void Start()
@@ -43,23 +41,39 @@ namespace System.Game
             m_stateMachine.Handle();
         }
 
+        /// <summary>
+        /// Set GameOver State
+        /// </summary>
+        /// <param name="p_mode"></param>
         public void GameOver(States.GameOverMode p_mode = States.GameOverMode.GAME_OVER_LOSE)
         {
             m_gameOverState.Mode = p_mode;
             m_stateMachine.ChangeTo(m_gameOverState);
         }
 
+        /// <summary>
+        /// Set Game Start State
+        /// </summary>
         public void GameStart()
         {
             m_stateMachine.ChangeTo(m_playingState);
         }
 
+        /// <summary>
+        /// Start a opening animation timeline
+        /// </summary>
         public void GameOpening()
         {
             GameObject.FindGameObjectWithTag("tStartButton").SetActive(false);
-            GameObject.FindObjectOfType<PlayableDirector>()?.Play();
+
+            PlayableDirector l_director = GameObject.FindObjectOfType<PlayableDirector>();
+            if (l_director != null)
+                l_director.Play();
         }
 
+        /// <summary>
+        /// Move to next level or end the gameplay(!!!) NOTE: TO REFACTORING
+        /// </summary>
         public void GameNextLevel()
         {
             if (m_levelManager.NextLevel(out m_level))
@@ -69,7 +83,7 @@ namespace System.Game
                 FollowerCamera l_follower = l_camera.GetComponent<FollowerCamera>();
                 l_follower.SetBounds(l_bounds.GetComponent<BoxCollider2D>());
             }
-            else
+            else //<(e) Si no hay más niveles el player gano el juego
             {
                 GameOver(States.GameOverMode.GAME_OVER_WIN);
             }

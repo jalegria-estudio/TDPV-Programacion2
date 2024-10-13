@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Items
 {
+    /// <summary>
+    /// Generic Item Class Script
+    /// </summary>
     public class Item : MonoBehaviour
     {
         [Header("Configuration")]
@@ -35,25 +38,19 @@ namespace Items
             ControlCollected();
         }
 
+        // Sent when another object enters a trigger collider attached to this object (2D physics only).
         protected void OnTriggerEnter2D(Collider2D p_collision)
         {
+            //<(i) Disappear the item if touch by player
             if (p_collision.CompareTag("tPlayer"))
             {
                 OnCollect();
             }
         }
 
-        public void OnDisappear()
-        {
-            this.gameObject.SetActive(false);
-        }
-
-        public void OnCollect()
-        {
-            m_jukebox.Play();
-            m_collected = true;
-        }
-
+        /// <summary>
+        /// Manage if the item must be disappear after once disappear time is over
+        /// </summary>
         protected void ControlDisappear()
         {
             if (!m_disappear)
@@ -66,10 +63,30 @@ namespace Items
             }
         }
 
+        /// <summary>
+        /// Manage desactive action when the item is collected
+        /// </summary>
         protected void ControlCollected()
         {
             if (this.gameObject.activeSelf && m_collected && !m_jukebox.isPlaying)
                 this.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// this function is called when disappear animation event is called
+        /// </summary>
+        public void OnDisappear()
+        {
+            this.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// this function is called when the item was collected
+        /// </summary>
+        public void OnCollect()
+        {
+            m_jukebox.Play();
+            m_collected = true;
         }
     }
 
