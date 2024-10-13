@@ -1188,6 +1188,7 @@ GameObject:
   - component: {fileID: 129301615}
   - component: {fileID: 129301614}
   - component: {fileID: 129301616}
+  - component: {fileID: 129301617}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1235,6 +1236,51 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e21570e34b8d2e64289f5a58aafe326b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &129301617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129301613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Events:
+    m_Signals:
+    - {fileID: 11400000, guid: e6b2d3a1a28057943975423756969404, type: 2}
+    - {fileID: 11400000, guid: 7e3c49a290aa9734ca256c298296222a, type: 2}
+    m_Events:
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 129301614}
+          m_TargetAssemblyTypeName: System.Game.GameManager, Assembly-CSharp
+          m_MethodName: GameStart
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 177887932}
+          m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+          m_MethodName: Play
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!4 &131630880 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7188341641532358393, guid: ff5d5a6f46401c343a4b319274a0d22c, type: 3}
@@ -1346,7 +1392,6 @@ GameObject:
   m_Component:
   - component: {fileID: 177887933}
   - component: {fileID: 177887932}
-  - component: {fileID: 177887934}
   m_Layer: 0
   m_Name: AudioSource
   m_TagString: Untagged
@@ -1465,36 +1510,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 444136592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &177887934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177887931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Events:
-    m_Signals:
-    - {fileID: 11400000, guid: 7e3c49a290aa9734ca256c298296222a, type: 2}
-    m_Events:
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 177887932}
-          m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-          m_MethodName: Play
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
 --- !u!1001 &193008431
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2158,6 +2173,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4458359634664740418, guid: b849f98d6bd3013499592ee4aa36b54f, type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: 8418204508859773708, guid: 0000000000000000d000000000000000, type: 0}
     - target: {fileID: 4458359634664740418, guid: b849f98d6bd3013499592ee4aa36b54f, type: 3}
       propertyPath: m_Name
       value: Player
@@ -3563,7 +3582,7 @@ PlayableDirector:
   - key: {fileID: 3858809951772174497, guid: e75263d7213d4cf40ab004e6fa58817e, type: 2}
     value: {fileID: 361807916}
   - key: {fileID: -4174036836417234663, guid: e75263d7213d4cf40ab004e6fa58817e, type: 2}
-    value: {fileID: 1888190615}
+    value: {fileID: 0}
   - key: {fileID: 3668819973038163139, guid: e75263d7213d4cf40ab004e6fa58817e, type: 2}
     value: {fileID: 1649053565}
   - key: {fileID: -1386428487200754505, guid: e75263d7213d4cf40ab004e6fa58817e, type: 2}
@@ -3574,6 +3593,8 @@ PlayableDirector:
     value: {fileID: 177887932}
   - key: {fileID: -4767459527338677809, guid: e75263d7213d4cf40ab004e6fa58817e, type: 2}
     value: {fileID: 177887932}
+  - key: {fileID: 756619219968389529, guid: e75263d7213d4cf40ab004e6fa58817e, type: 2}
+    value: {fileID: 129301617}
   m_ExposedReferences:
     m_References: []
 --- !u!1001 &429573059
@@ -5665,7 +5686,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 426433552}
-  - {fileID: 1888190611}
   - {fileID: 101036939}
   - {fileID: 501041450}
   - {fileID: 1961306404}
@@ -10697,7 +10717,6 @@ GameObject:
   - component: {fileID: 1264177548}
   - component: {fileID: 1264177547}
   - component: {fileID: 1264177549}
-  - component: {fileID: 1264177550}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -10787,36 +10806,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1264177550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1264177545}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e52de21a22b6dd44c9cc19f810c65059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Events:
-    m_Signals:
-    - {fileID: 11400000, guid: e6b2d3a1a28057943975423756969404, type: 2}
-    m_Events:
-    - m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 129301614}
-          m_TargetAssemblyTypeName: System.Game.GameManager, Assembly-CSharp
-          m_MethodName: GameStart
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 1
-          m_CallState: 2
 --- !u!4 &1264920533 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6527599203687487530, guid: 06a6814c88441024ba930af1c62c3af5, type: 3}
@@ -27565,112 +27554,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff5d5a6f46401c343a4b319274a0d22c, type: 3}
---- !u!1 &1888190610
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1888190611}
-  - component: {fileID: 1888190614}
-  - component: {fileID: 1888190615}
-  m_Layer: 0
-  m_Name: Background
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1888190611
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888190610}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2}
-  m_LocalScale: {x: 25, y: 25, z: 0}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 742311873}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1888190614
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888190610}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0.03921569, b: 0.03921569, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
---- !u!95 &1888190615
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1888190610}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &1896643334 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7188341641532358393, guid: ff5d5a6f46401c343a4b319274a0d22c, type: 3}
