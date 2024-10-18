@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13b75c95f34a00d4e8c04f76b73312e6, type: 3}
-  m_Name: Pumpkin
+  m_Name: EvilPumpkin
   m_EditorClassIdentifier: 
   m_AnimatedSprites:
-  - {fileID: 39462776, guid: 565963d8c6a0e9a4ba5a6f9762c4e000, type: 3}
-  - {fileID: 1544263896, guid: 565963d8c6a0e9a4ba5a6f9762c4e000, type: 3}
-  - {fileID: 871292717, guid: 565963d8c6a0e9a4ba5a6f9762c4e000, type: 3}
+  - {fileID: -122047418, guid: 565963d8c6a0e9a4ba5a6f9762c4e000, type: 3}
+  - {fileID: 1921486325, guid: 565963d8c6a0e9a4ba5a6f9762c4e000, type: 3}
   m_MinSpeed: 1
   m_MaxSpeed: 1
   m_AnimationStartTime: 0
