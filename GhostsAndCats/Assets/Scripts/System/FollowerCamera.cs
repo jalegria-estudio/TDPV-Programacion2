@@ -23,15 +23,18 @@ public class FollowerCamera : MonoBehaviour
 {
     ///// CONFIG INSPECTOR /////
     [Header("Configuration")]
+    [SerializeField] bool m_turnOn = true;
     [SerializeField] GameObject m_objetive = null;
     [SerializeField] Camera m_camera = null;
     [SerializeField] Collider2D m_bounds = null;
+    public bool TurnOn { get => m_turnOn; set => m_turnOn = value; }
 
     // Start is called before the first frame update
     void Start()
     {
         Debug.Assert(m_camera.orthographic, "<DEBUG ASSERT> The Main Camera must be a orthographic camera!");
-        Debug.Assert(m_bounds != null, "<DEBUG ASSERT> The Follower Camera needs bounds!");
+        if (m_bounds == null)
+            Debug.LogWarning("<DEBUG> The Follower Camera needs bounds!");
         //m_camera = gameObject.GetComponent<Camera>();
         //m_camera.orthographic = true; //Force orthographic camera 
         //m_camera.transform.Translate(m_objetive.transform.position);
@@ -59,10 +62,20 @@ public class FollowerCamera : MonoBehaviour
     /// </summary>
     protected void TranslateCamera()
     {
+        if (!m_turnOn)
+            return;
+
         float l_viewportHeightHalfSize = m_camera.orthographicSize;
         float l_viewportWidthHalfSize = m_camera.orthographicSize * m_camera.aspect;//<(e) Es la inversa del aspect ratio =>  The aspect ratio (width divided by height).
         Vector3 l_cameraPos = m_camera.transform.position;
         Vector2 l_objetivePos = m_objetive.transform.position;
+
+        if (m_bounds == null)
+        {
+            l_cameraPos = l_objetivePos;
+            m_camera.transform.position = l_cameraPos;
+            return;
+        }
 
         //<(e) Only It updates camera-pos if the viewport (with a new pos) doesn't touch a limit-camera-bounds
         /// Horizontal Limit
@@ -123,5 +136,27 @@ public class FollowerCamera : MonoBehaviour
         m_bounds = p_cameraBounds;
         m_camera.gameObject.SetActive(true);
 
+    }
+
+    /// <summary>
+    /// Set a camera position
+    /// </summary>
+    /// <param name="p_cameraBounds"></param>
+    public void SetCameraPosition(Vector3 p_cameraPos)
+    {
+        m_camera.gameObject.SetActive(false); //<(!) Reset camera view
+        m_camera.transform.position = p_cameraPos;
+        m_camera.gameObject.SetActive(true);
+    }
+
+    /// <summary>
+    /// Set a camera position
+    /// </summary>
+    /// <param name="p_cameraBounds"></param>
+    public void SetCameraPosition(Vector2 p_cameraPos)
+    {
+        m_camera.gameObject.SetActive(false); //<(!) Reset camera view
+        m_camera.transform.position = new Vector3(p_cameraPos.x, p_cameraPos.y, m_camera.transform.position.z);
+        m_camera.gameObject.SetActive(true);
     }
 }

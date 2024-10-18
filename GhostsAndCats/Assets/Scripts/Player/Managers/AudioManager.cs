@@ -2,14 +2,13 @@ using UnityEngine;
 
 namespace Managers
 {
+    /// <summary>
+    /// Audio manager
+    /// </summary>
     public class AudioManager : MonoBehaviour
     {
-        [Header("Configuration")]
-        [SerializeField] AudioClip m_sfxJump = null;
-        [SerializeField] AudioClip m_sfxDefeat = null;
-        [SerializeField] AudioClip m_sfxDamage = null;
-        [SerializeField] AudioClip m_sfxStomp = null;
-
+        ///// COMPONENTS /////
+        protected PlayerData m_data = null;
         protected Rigidbody2D m_rigidBody = null;
         protected InputController m_inputController = null;
         protected SpriteRenderer m_spriteRenderer = null;
@@ -21,6 +20,7 @@ namespace Managers
             m_audioSourcer = this.gameObject.GetComponent<AudioSource>();
             m_rigidBody = this.gameObject.GetComponent<Rigidbody2D>();
             m_inputController = this.gameObject.GetComponent<InputController>();
+            m_data = this.gameObject.GetComponent<Player>().Data;
 
             configEvents();
         }
@@ -71,22 +71,22 @@ namespace Managers
 
         public void OnJumpSfx()
         {
-            this.Play(m_sfxJump);
+            this.Play(m_data.SfxJump);
         }
 
         public void OnStompSfx()
         {
-            this.Play(m_sfxStomp);
+            this.Play(m_data.SfxStomp);
         }
 
         public void OnDamageSfx()
         {
-            this.Play(m_sfxDamage);
+            this.Play(m_data.SfxDamage);
         }
 
         public void OnDefeatSfx()
         {
-            this.Play(m_sfxDefeat);
+            this.Play(m_data.SfxDefeat);
         }
     }
 } //namespace Managers

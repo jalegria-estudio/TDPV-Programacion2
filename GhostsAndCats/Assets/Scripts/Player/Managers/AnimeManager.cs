@@ -1,18 +1,21 @@
 using Settings;
 using UnityEngine;
 
-
 namespace Managers
 {
+    /// <summary>
+    /// Animation Manager
+    /// </summary>
     public class AnimeManager : MonoBehaviour
     {
-        [Header("Configuration")]
-        [SerializeField] float m_inputH = 0.0f;
-        [SerializeField] float m_inputV = 0.0f;
-
+        ///// COMPONENTS /////
         protected Rigidbody2D m_rigidBody = null;
         protected SpriteRenderer m_spriteRenderer = null;
         protected Animator m_animator = null;
+
+        ///// STATUS /////
+        float m_inputH = 0.0f;
+        float m_inputV = 0.0f;
 
         // Called when the object becomes enabled and active, always after Awake (on the same object) and before any Start.
         //Source: https://docs.unity3d.com/Manual/ExecutionOrder.html

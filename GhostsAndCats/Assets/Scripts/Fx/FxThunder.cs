@@ -30,6 +30,7 @@ public class FxThunder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        m_camera = Camera.main;
         m_colorDefault = m_camera.backgroundColor;
         m_camera.clearFlags = CameraClearFlags.SolidColor;
 

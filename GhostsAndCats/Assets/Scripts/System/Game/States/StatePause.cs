@@ -2,29 +2,42 @@
 
 namespace System.Game.States
 {
+    /// <summary>
+    /// Inactive or pause state
+    /// </summary>
     class StatePause : IGameState
     {
         GameObject m_player = null;
         readonly GameManager m_gameManager = null;
 
-        //Constructor because it not use MonoBehaviour
+        /// <summary>
+        /// Constructor because it not use MonoBehaviour
+        /// </summary>
         public StatePause(GameManager p_gameManager)
         {
             m_gameManager = p_gameManager;
         }
 
-        // Logic that runs when enter to the state
+        /// <summary>
+        /// Logic that runs when enter to the state
+        /// <summary>
         public void Enter()
         {
+#if GAME_DEBUG
             Debug.Log("Enter to inactive state");
+#endif
             m_player = GameObject.FindGameObjectWithTag("tPlayer");
             m_player.SetActive(false);
         }
 
-        // Logic that runs when exit from the state
+        /// <summary>
+        /// Logic that runs when exit from the state
+        /// <summary>
         public void Exit()
         {
+#if GAME_DEBUG
             Debug.Log("Exit to inactive state");
+#endif
             m_player.SetActive(true);
         }
 

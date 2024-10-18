@@ -1,5 +1,9 @@
 using Managers;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(JumpManager), typeof(WalkManager))]
 public class InputController : MonoBehaviour
@@ -54,10 +58,10 @@ public class InputController : MonoBehaviour
         if (!Input.GetKeyDown(KeyCode.H))
             return;
 
-        Canvas l_rules = GameObject.FindFirstObjectByType<Canvas>(FindObjectsInactive.Include);
+        GameObject l_rules = GameObject.Find("Rules");
+        Text l_text = l_rules.GetComponent<Text>();
 
-        if (l_rules && l_rules.CompareTag("tRules"))
-            l_rules.enabled = !l_rules.enabled;
-
+        if (l_rules)
+            l_text.enabled = !l_text.enabled;
     }
 }

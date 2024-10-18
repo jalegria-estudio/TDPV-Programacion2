@@ -4,34 +4,37 @@ using UnityEngine;
 
 namespace Managers
 {
+    /// <summary>
+    /// Walking Manager
+    /// </summary>
     public class WalkManager : MonoBehaviour
     {
         ///// EVENTS ACTIONS /////
         public System.Action<bool> EVT_DUCK;
 
-        ///// INSPECTOR CONFIGURATION /////
-        [Header("CONFIGURATION")]
-        [SerializeField] protected float m_walkSpeed = Config.PLAYER_WALK_SPEED;
-        [SerializeField] protected float m_runSpeed = Config.PLAYER_WALK_SPEED * Config.PLAYER_WALK_RUN_FACTOR;
-        [SerializeField] protected float m_duckSpeed = Config.PLAYER_WALK_SPEED * Config.PLAYER_WALK_DUCK_FACTOR;
-        [SerializeField] protected float m_duckScale = Config.PLAYER_DUCK_SCALE;
-        [SerializeField] protected float m_unduckScale = Config.PLAYER_UNDUCK_SCALE;
+        ///// COMPONENTS /////
+        protected PlayerData m_data = null;
         protected Rigidbody2D m_rigidBody = null;
         protected SpriteRenderer m_spriteRenderer = null;
 
+        ///// RENDERING /////
+        protected float m_duckScale = Config.PLAYER_DUCK_SCALE; //Low-level Config
+        protected float m_unduckScale = Config.PLAYER_UNDUCK_SCALE; //Low-level Config
+
+        ///// STATUS /////
         protected bool m_run = false;
         protected bool m_duck = false;
         protected bool m_ducked = false;
         protected float m_speed = .0f;
 
         public bool Run { get => m_run; set => m_run = value; }
-
         public bool Duck { get => m_duck; set => m_duck = value; }
 
         private void Start()
         {
             m_rigidBody = this.GetComponent<Rigidbody2D>();
             m_spriteRenderer = this.GetComponent<SpriteRenderer>();
+            m_data = GameObject.Find("Player").GetComponent<Player>().Data;
         }
 
         /// <summary>
@@ -96,12 +99,12 @@ namespace Managers
             if (m_ducked)
                 duck(p_horizontalInput);
             else
-                Moves.Walk(m_rigidBody, m_walkSpeed, p_horizontalInput);
+                Moves.Walk(m_rigidBody, m_data.WalkSpeed, p_horizontalInput);
         }
 
         protected void run(float p_horizontalInput)
         {
-            Moves.Run(m_rigidBody, m_runSpeed, p_horizontalInput);
+            Moves.Run(m_rigidBody, m_data.RunSpeed, p_horizontalInput);
         }
 
         protected void duck(float p_horizontalInput)
@@ -113,13 +116,13 @@ namespace Managers
                 EVT_DUCK?.Invoke(m_ducked);
             }
 
-            Moves.Duck(m_rigidBody, m_duckSpeed, p_horizontalInput);
+            Moves.Duck(m_rigidBody, m_data.DuckSpeed, p_horizontalInput);
         }
 
         protected void unduck(float p_horizontalInput)
         {
             m_rigidBody.mass = 1;
-            Moves.Unduck(m_rigidBody, m_walkSpeed, p_horizontalInput);
+            Moves.Unduck(m_rigidBody, m_data.WalkSpeed, p_horizontalInput);
             Moves.UnduckRenderer(gameObject.GetComponents<BoxCollider2D>());
             m_ducked = false;
             EVT_DUCK?.Invoke(m_ducked);

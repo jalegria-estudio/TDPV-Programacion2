@@ -2,29 +2,38 @@
 
 namespace System.Game.States
 {
+    /// <summary>
+    /// Playing State
+    /// </summary>
     class StatePlaying : IGameState
     {
         Player m_player = null;
         readonly GameManager m_gameManager = null;
-        //Constructor because it not use MonoBehaviour
+
+        /// <summary>
+        /// Constructor because it not use MonoBehaviour
+        /// </summary>
         public StatePlaying(GameManager p_gameManager)
         {
             m_gameManager = p_gameManager;
         }
-
-        // Logic that runs when enter to the state
+        /// <summary>
+        /// Logic that runs when enter to the state
+        /// </summary>
         public void Enter()
         {
-            Debug.Log("Enter to playing state");
+            //Debug.Log("Enter to playing state");
             m_player = GameObject.FindGameObjectWithTag("tPlayer").GetComponent<Player>();
             //<(i) Register evt_goal
             m_player.EVT_GOAL += m_gameManager.GameNextLevel;
         }
 
-        // Logic that runs when exit from the state
+        /// <summary>
+        /// Logic that runs when exit from the state
+        /// </summary>
         public void Exit()
         {
-            Debug.Log("Exit to playing state");
+            //Debug.Log("Exit to playing state");
             m_player.EVT_GOAL -= m_gameManager.GameNextLevel;
         }
 
@@ -37,10 +46,10 @@ namespace System.Game.States
         {
             //Debug.Log($"Player => Lifes: {m_player.Lifes}");
 
-            if (m_player.Lifes == 0)
+            if (m_player.IsDefeated())
             {
                 m_gameManager.GameOver(GameOverMode.GAME_OVER_LOSE);
             }
         }
-    }
+    }// class StatePlaying
 }//namespace System.Game.States

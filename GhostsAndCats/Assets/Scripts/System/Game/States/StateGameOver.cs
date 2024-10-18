@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 namespace System.Game.States
 {
+    /// <summary>
+    /// Game Over Mode
+    /// </summary>
     public enum GameOverMode
     {
         NONE,
@@ -10,6 +13,9 @@ namespace System.Game.States
         GAME_OVER_LOSE
     }
 
+    /// <summary>
+    /// State Game-Over
+    /// </summary>
     class StateGameOver : IGameState
     {
         protected readonly GameManager m_gameManager = null;
@@ -17,13 +23,19 @@ namespace System.Game.States
 
         public GameOverMode Mode { get => m_mode; set => m_mode = value; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="p_gameManager">Main game manager</param>
         public StateGameOver(GameManager p_gameManager)
         {
             m_gameManager = p_gameManager;
             m_mode = GameOverMode.NONE;
         }
 
-        // Logic that runs when enter to the state
+        /// <summary>
+        /// Logic that runs when enter to the state
+        /// <summary>
         public void Enter()
         {
             GameObject.FindGameObjectWithTag("tPlayer").SetActive(false);
@@ -46,12 +58,16 @@ namespace System.Game.States
             }
         }
 
-        // Logic that runs when exit from the state
+        /// <summary>
+        /// Logic that runs when exit from the state
+        /// <summary>
         public void Exit()
         {
         }
 
-        // Fixed coded logic runs every frame. Note: include here a condition to transition to a new state
+        /// <summary>
+        /// Fixed coded logic runs every frame. Note: include here a condition to transition to a new state
+        /// <summary>
         public void Update()
         {
         }

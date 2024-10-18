@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace System.Game
 {
     /**
@@ -23,6 +25,7 @@ namespace System.Game
         {
             m_currentState = p_startingState;
             m_currentState?.Enter();
+            Camera.main.transform.position = new Vector3(0, -3, -12);
         }
 
         public void ChangeTo(IGameState p_nextState)
