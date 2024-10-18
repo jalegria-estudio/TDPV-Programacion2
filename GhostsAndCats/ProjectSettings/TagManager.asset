@@ -21,6 +21,8 @@ TagManager:
   - tLevel
   - tCameraBounds
   - tCameraBoundsHorizontal
+  - tItemTuna
+  - tItemSoul
   layers:
   - Default
   - TransparentFX
