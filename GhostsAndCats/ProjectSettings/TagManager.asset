@@ -23,6 +23,7 @@ TagManager:
   - tCameraBoundsHorizontal
   - tItemTuna
   - tItemSoul
+  - tCreditsButton
   layers:
   - Default
   - TransparentFX
