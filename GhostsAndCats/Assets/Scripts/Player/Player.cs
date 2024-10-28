@@ -80,7 +80,8 @@ public class Player : MonoBehaviour
                     OnGoal();
                     break;
                 case "tItemTuna":
-                    EVT_COLLECT_TUNA?.Invoke();
+                    if (p_collider.isActiveAndEnabled)
+                        EVT_COLLECT_TUNA?.Invoke();
                     break;
                 case "tItemSoul":
                     EVT_COLLECT_SOUL?.Invoke();

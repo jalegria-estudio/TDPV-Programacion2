@@ -13,7 +13,7 @@ namespace System.Game
         [Header("Configuration")]
         protected int m_currentLevel = 0;
         protected List<string> m_levels = new List<string>();//<(i) Source: https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1
-        protected const int m_QTY_LEVELS = 2;
+        //protected const int m_QTY_LEVELS = 2;
 
         /// <summary>
         /// Get and set current level index
@@ -49,9 +49,12 @@ namespace System.Game
         /// </summary>
         public void init()
         {
-            m_levels.Add("Game");//<(e) Main scene =>id0
+            m_levels.Add("Game");//<(e) Game scene =>id0
+            m_levels.Add("Main");
             m_levels.Add("Level1-1");
             m_levels.Add("Level1-2");
+
+            /// Suscription to SceneManager Events => https://docs.unity3d.com/2022.3/Documentation/ScriptReference/SceneManagement.SceneManager.html
             SceneManager.sceneLoaded += OnLoadedLevel;
         }
 
@@ -66,6 +69,7 @@ namespace System.Game
                 Debug.LogWarning($"(!) Scene Level didn't load by out-rangue index. > {p_levelID}");
                 return;
             }
+
             //m_levels[p_levelID].SetActive(true);
             SceneManager.LoadSceneAsync(m_levels[p_levelID], LoadSceneMode.Additive);
             m_currentLevel = p_levelID;
@@ -97,8 +101,9 @@ namespace System.Game
                 return false;
             }
 
-            if (m_currentLevel != 0) //<(e) The main game scene is Game Scene = id0
+            if (m_currentLevel != 0) //<(e) The game scene is Game Scene = id0
                 Inactive(m_currentLevel);
+
             m_currentLevel++;
             Active(m_currentLevel);
 
@@ -106,12 +111,12 @@ namespace System.Game
         }
 
         /// <summary>
-        /// Load level configuration to main scene when this loaded
+        /// Load level configuration to game scene when this loaded
         /// Source: https://docs.unity3d.com/ScriptReference/SceneManagement.SceneManager-sceneLoaded.html
         /// </summary>
-        /// <param name="scene"></param>
-        /// <param name="mode"></param>
-        public void OnLoadedLevel(Scene scene, LoadSceneMode mode)
+        /// <param name="p_scene"></param>
+        /// <param name="p_mode"></param>
+        public void OnLoadedLevel(Scene p_scene, LoadSceneMode p_mode)
         {
             /**
              * <(!) Suscription to SceneManager.sceneLoaded
@@ -119,7 +124,7 @@ namespace System.Game
              * Rather than being called directly this script code shows use of a delegate.
              * NOTE: It's necessery waiting for all components are loaded for load scene's levels.
              */
-            if (scene.name != m_levels[m_currentLevel])
+            if (p_scene.name != m_levels[m_currentLevel])
                 return;
 #if GAME_DEBUG
             //SCENES LOADED STATUS//
@@ -128,13 +133,30 @@ namespace System.Game
             Debug.Log($"<DEBUG>Loaded Scene qty: {SceneManager.loadedSceneCount}");
             Debug.Log($"<DEBUG>Level Scene is loaded: {l_levelScene.isLoaded}");
 #endif
+            SetupLevel();
+        }
+
+        /// <summary>
+        /// Config level and player data object
+        /// </summary>
+        /// <returns></returns>
+        public bool SetupLevel()
+        {
             // Setups //
-            Level l_level = GameObject.FindFirstObjectByType<Level>();
-            Debug.Assert(l_level.Data != null, "Not found data in scene level!");
+            Level l_level = GameObject.FindFirstObjectByType<Level>(); //<(i) Search playable level data: start-point, goal-point, etc.
+
+            if (l_level == null)
+            {
+                Debug.LogWarning($"Not found data-level in {SceneManager.GetSceneAt(m_currentLevel).name} scene. The scene isn't configured!");
+                return false;
+            }
 
             SetupPlayer(l_level);
             SetupCamera(l_level);
+
+            return true;
         }
+
 
         /// <summary>
         /// Config main camera with Level Data in Game scene follower-camera component
@@ -142,9 +164,14 @@ namespace System.Game
         public bool SetupCamera(Level p_level)
         {
             //Load main camera bounds and position
-            Camera l_camera = Camera.main;
             GameObject l_bounds = GameObject.FindWithTag("tCameraBounds");//GameObject.FindGameObjectWithTag("tCameraBounds");
-            Debug.Assert(l_bounds != null, "Not found main-camera bounds in scene level!");
+            if (l_bounds == null)
+            {
+                Debug.LogWarning($"Not found main-camera bounds for the level in {SceneManager.GetSceneAt(m_currentLevel).name} scene!");
+                return false;
+            }
+
+            Camera l_camera = Camera.main;
             FollowerCamera l_follower = l_camera.GetComponent<FollowerCamera>();
 
             l_follower.SetBounds(l_bounds.GetComponent<BoxCollider2D>());
@@ -159,22 +186,33 @@ namespace System.Game
         /// </summary>
         public bool SetupPlayer(Level p_level)
         {
-            GameObject l_player = GameObject.FindWithTag("tPlayer");
+            //<(i) It's a method from Generic -Object- Class => Object.FindFirstObjectByType =>
+            // In Documentation doesn't notice about You can search inactive objects!
+            // <(i) Nota: Se puede configurar los componentes de inactive objects. Posibilidad de refactorin!
+            // Source: https://docs.unity3d.com/2022.3/Documentation/ScriptReference/Object.FindFirstObjectByType.html
+            Player l_player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
+            //GameObject l_player = GameObject.FindWithTag("tPlayer");
 
-            if (l_player == null || !l_player.activeSelf)
+            //if (l_player == null || !l_player.activeSelf)
+            if (l_player == null)
             {
-                Debug.LogWarning("Player isn't active on scene level!");
+                Debug.LogWarning($"Player isn't active for the level in {SceneManager.GetSceneAt(m_currentLevel).name} scene. It couldn't be configured!");
                 return false;
             }
+            else
+            {
+                Debug.Log($"Player will be configured for {p_level.name} scene");
+            }
 
+            //<(i) Config player position on level
             Vector2 l_startPos = p_level.Data.StartPoint;
             l_player.GetComponent<Player>().SpawnPosition = l_startPos;
             l_player.GetComponent<Player>().TranslateToSpawnPosition();
 
-            /// <(i) Load 
-            ExperienceManager l_lvlManager = null;
-            if (l_player.TryGetComponent<ExperienceManager>(out l_lvlManager))
-                l_lvlManager.LevelData = p_level.Data;
+            /// <(i) Load data for status player
+            ExperienceManager l_StatusManager = null;
+            if (l_player.TryGetComponent<ExperienceManager>(out l_StatusManager))
+                l_StatusManager.LevelData = p_level.Data;
             else
                 Debug.LogWarning("<DEBUG> Level component isn't loaded for Player Experience Manager!");
 

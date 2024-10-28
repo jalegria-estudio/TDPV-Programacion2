@@ -22,10 +22,12 @@ namespace System.Game.States
         /// </summary>
         public void Enter()
         {
-            //Debug.Log("Enter to playing state");
+            Debug.Log("Enter to playing state");
             m_player = GameObject.FindGameObjectWithTag("tPlayer").GetComponent<Player>();
-            //<(i) Register evt_goal
-            m_player.EVT_GOAL += m_gameManager.GameNextLevel;
+            GameObject.FindFirstObjectByType<AudioSource>().Play();
+
+            //<(i) Register evt_goal for when the player finishes the stage
+            m_player.EVT_GOAL += m_gameManager.MoveNextLevel;
         }
 
         /// <summary>
@@ -33,8 +35,8 @@ namespace System.Game.States
         /// </summary>
         public void Exit()
         {
-            //Debug.Log("Exit to playing state");
-            m_player.EVT_GOAL -= m_gameManager.GameNextLevel;
+            Debug.Log("Exit from playing state");
+            m_player.EVT_GOAL -= m_gameManager.MoveNextLevel;
         }
 
         // Fixed coded logic runs every frame.
@@ -44,10 +46,9 @@ namespace System.Game.States
         // <(!!) En este caso llamo a un metodo del controller (GameManager) para disparar el cambio de estado.
         public void Update()
         {
-            //Debug.Log($"Player => Lifes: {m_player.Lifes}");
-
             if (m_player.IsDefeated())
             {
+                Debug.Log("PLayer is defeated!");
                 m_gameManager.GameOver(GameOverMode.GAME_OVER_LOSE);
             }
         }

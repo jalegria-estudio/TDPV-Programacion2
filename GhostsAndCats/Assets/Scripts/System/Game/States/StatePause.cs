@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define GAME_DEBUG
+
+using UnityEngine;
 
 namespace System.Game.States
 {
@@ -24,7 +26,7 @@ namespace System.Game.States
         public void Enter()
         {
 #if GAME_DEBUG
-            Debug.Log("Enter to inactive state");
+            Debug.Log("Enter to inactive state. Player is not active!");
 #endif
             m_player = GameObject.FindGameObjectWithTag("tPlayer");
             m_player.SetActive(false);
@@ -36,7 +38,7 @@ namespace System.Game.States
         public void Exit()
         {
 #if GAME_DEBUG
-            Debug.Log("Exit to inactive state");
+            Debug.Log("Exit from inactive state. Player is actived!");
 #endif
             m_player.SetActive(true);
         }

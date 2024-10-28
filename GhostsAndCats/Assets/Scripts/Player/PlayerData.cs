@@ -2,6 +2,7 @@ using Settings;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "PlayerData", menuName = "ScriptableObjects/PlayerData", order = 1)]
 public class PlayerData : ScriptableObject
@@ -145,8 +146,10 @@ public class PlayerData : ScriptableObject
     [SerializeField] AudioClip m_sfxDefeat = null;
     [SerializeField] AudioClip m_sfxDamage = null;
     [SerializeField] AudioClip m_sfxStomp = null;
+    [SerializeField] AudioClip m_sfx1up = null;
     public AudioClip SfxJump { get => m_sfxJump; set => m_sfxJump = value; }
     public AudioClip SfxDefeat { get => m_sfxDefeat; set => m_sfxDefeat = value; }
     public AudioClip SfxDamage { get => m_sfxDamage; set => m_sfxDamage = value; }
     public AudioClip SfxStomp { get => m_sfxStomp; set => m_sfxStomp = value; }
+    public AudioClip Sfx1up { get => m_sfx1up; set => m_sfx1up = value; }
 }

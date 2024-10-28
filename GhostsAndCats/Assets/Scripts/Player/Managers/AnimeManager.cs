@@ -77,14 +77,20 @@ namespace Managers
         ///////////////////////////////////
         protected void subscribesToEvents()
         {
-            if (gameObject.GetComponent<WalkManager>())
+            if (gameObject.GetComponent<WalkManager>() != null)
                 gameObject.GetComponent<WalkManager>().EVT_DUCK += HandleDuck;
+
+            if (gameObject.GetComponent<ExperienceManager>() != null)
+                gameObject.GetComponent<ExperienceManager>().EVT_1UP += Handle1Up;
         }
 
         protected void unsubscribesToEvents()
         {
-            if (gameObject.GetComponent<WalkManager>())
+            if (gameObject.GetComponent<WalkManager>() != null)
                 gameObject.GetComponent<WalkManager>().EVT_DUCK -= HandleDuck;
+
+            if (gameObject.GetComponent<ExperienceManager>() != null)
+                gameObject.GetComponent<ExperienceManager>().EVT_1UP -= Handle1Up;
         }
 
         ///////////////////////////////////
@@ -126,6 +132,11 @@ namespace Managers
         public void HandleDuck(bool p_ducked)
         {
             m_animator.SetBool("pDucked", p_ducked);
+        }
+
+        public void Handle1Up()
+        {
+            m_animator.SetTrigger("p1up");
         }
     }
 }//namespace Managers

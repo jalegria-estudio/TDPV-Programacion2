@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Managers
@@ -33,6 +34,15 @@ namespace Managers
             {
                 l_jumper.EVT_JUMP -= OnJumpSfx;
             }
+
+            ///Stomp Event///
+            if (this.gameObject.GetComponent<Player>())
+                this.gameObject.GetComponent<Player>().EVT_STOMP -= OnStompSfx;
+
+            /// 1-UP ///
+            if (this.gameObject.GetComponent<ExperienceManager>())
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP -= On1UpSfx;
+
         }
 
         /// <summary>
@@ -48,7 +58,13 @@ namespace Managers
             }
 
             ///Stomp Event///
-            this.gameObject.GetComponent<Player>().EVT_STOMP += OnStompSfx;
+            if (this.gameObject.GetComponent<Player>() != null)
+                this.gameObject.GetComponent<Player>().EVT_STOMP += OnStompSfx;
+
+            /// 1-UP ///
+            if (this.gameObject.GetComponent<ExperienceManager>() != null)
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP += On1UpSfx;
+
         }
 
         /// <summary>
@@ -87,6 +103,11 @@ namespace Managers
         public void OnDefeatSfx()
         {
             this.Play(m_data.SfxDefeat);
+        }
+
+        private void On1UpSfx()
+        {
+            this.Play(m_data.Sfx1up);
         }
     }
 } //namespace Managers

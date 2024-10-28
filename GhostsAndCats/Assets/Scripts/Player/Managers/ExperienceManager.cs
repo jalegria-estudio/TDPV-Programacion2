@@ -10,11 +10,14 @@ namespace Managers
     /// </summary>
     public class ExperienceManager : MonoBehaviour
     {
+        ///// EVENTS AVAILABLES /////
+        public event System.Action EVT_1UP;
+
         protected Player m_player = null;
+        protected HudManager m_hud = null;
         protected PlayerData m_playerData = null;
         protected LevelData m_levelData = null;
-
-        public LevelData LevelData { set => m_levelData = value; }
+        public LevelData LevelData { get => m_levelData; set => m_levelData = value; }
 
         // Start is called before the first frame update
         void Start()
@@ -28,6 +31,13 @@ namespace Managers
             m_playerData = m_player.Data;
             m_player.EVT_COLLECT_TUNA += OnCollectTuna;
             m_player.EVT_COLLECT_SOUL += OnCollectSoul;
+
+            m_hud = FindFirstObjectByType<HudManager>();
+            if (m_hud == null)
+            {
+                Debug.LogWarning("<DEBUG> HudManager not found!");
+            }
+
         }
 
         private void OnDestroy()
@@ -49,6 +59,11 @@ namespace Managers
                 TurnOnGoal();
             else
                 TurnOffGoal();
+
+            if (m_hud != null)
+            {
+                m_hud.UpdateData(m_playerData, m_levelData);
+            }
         }
 
         /// <summary>
@@ -70,6 +85,7 @@ namespace Managers
             {
                 m_playerData.RemoveTunas(m_playerData.TunasCost1up);
                 m_playerData.AddLifes();
+                EVT_1UP?.Invoke();
             }
         }
 
@@ -111,6 +127,7 @@ namespace Managers
         protected void OnCollectTuna()
         {
             m_playerData.AddTunas();
+
         }
 
         /// <summary>

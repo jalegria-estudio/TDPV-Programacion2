@@ -3,6 +3,8 @@
 
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace System.Game
 {
@@ -10,7 +12,6 @@ namespace System.Game
     {
         [Header("Configuration")]
         [SerializeField] protected bool m_autoStart = false;
-        //[SerializeField] protected int m_levelId = 0;
 
         internal States.StatePlaying m_playingState;
         internal States.StateGameOver m_gameOverState;
@@ -20,28 +21,23 @@ namespace System.Game
         protected LevelManager m_levelManager = null;
         protected GameObject m_level = null;
 
-        public LevelManager LevelManager { get => m_levelManager; }
+        public Type State { get => m_stateMachine.m_currentState.GetType(); }
+
 
         // Start is called before the first frame update
         void Start()
         {
+            ///// Initialize State Machine /////
             m_stateMachine = new GameStateMachine();
             m_playingState = new States.StatePlaying(this);
             m_gameOverState = new States.StateGameOver(this);
             m_pauseState = new States.StatePause(this);
+            m_stateMachine.Init(m_pauseState);
+
+            ///// Initialize Level manager /////
             m_levelManager = gameObject.GetComponent<LevelManager>();
             m_levelManager.init();
-
-            if (m_autoStart)
-            {
-                GameObject.Find("Room").SetActive(false);
-                GameObject.Find("ButtonStart").SetActive(false);
-                GameStart();
-            }
-            else
-            {
-                GamePause();
-            }
+            m_levelManager.NextLevel();
 
         }
 
@@ -49,6 +45,62 @@ namespace System.Game
         void FixedUpdate()
         {
             m_stateMachine.Handle();
+        }
+
+        //////////////////////////////////////////////
+        /// GAMES-ACTIONS - METHODS TO CHANGE LEVELS
+        //////////////////////////////////////////////
+
+        /// <summary>
+        /// Set Game Start State
+        /// </summary>
+        public void GameStart()
+        {
+            if (m_autoStart)
+            {
+                MoveNextLevel();
+                GamePlay();
+            }
+            else
+            {
+                GameOpening();
+            }
+        }
+
+        /// <summary>
+        /// Move to next level or end the gameplay(!!!) NOTE: TO REFACTORING
+        /// </summary>
+        public void MoveNextLevel()
+        {
+            if (!m_levelManager.NextLevel())
+            {
+                GameOver(States.GameOverMode.GAME_OVER_WIN);//<(e) Si no hay más niveles el player gano el juego
+            }
+        }
+
+        //////////////////////////////////////////////
+        /// GAMES-STATES - METHODS TO CHANGE STATES
+        //////////////////////////////////////////////
+
+        /// <summary>
+        /// Pause tha game
+        /// </summary>
+        public void GamePause()
+        {
+            m_stateMachine.Init(m_pauseState);
+        }
+
+        /// <summary>
+        /// Start the game-play
+        /// </summary>
+        public void GamePlay()
+        {
+            if (m_levelManager.GetLevelScene().name == "Main")//<(i) When the opening is finished
+            {
+                MoveNextLevel();
+            }
+
+            m_stateMachine.ChangeTo(m_playingState);
         }
 
         /// <summary>
@@ -61,48 +113,9 @@ namespace System.Game
             m_stateMachine.ChangeTo(m_gameOverState);
         }
 
-        /// <summary>
-        /// Set Game Start State
-        /// </summary>
-        public void GameStart()
-        {
-            m_levelManager.NextLevel();
-            m_stateMachine.ChangeTo(m_playingState);
-        }
-
-        /// <summary>
-        /// Start a opening animation timeline
-        /// </summary>
         public void GameOpening()
         {
-#if GAME_DEBUG
-            Debug.Log("<DEBUG>Start Openging!");
-#endif
-
-            GameObject.FindGameObjectWithTag("tStartButton").SetActive(false);
-
-            PlayableDirector l_director = GameObject.FindObjectOfType<PlayableDirector>();
-            if (l_director != null)
-                l_director.Play();
-        }
-
-        /// <summary>
-        /// Move to next level or end the gameplay(!!!) NOTE: TO REFACTORING
-        /// </summary>
-        public void GameNextLevel()
-        {
-            if (!m_levelManager.NextLevel())
-            {
-                GameOver(States.GameOverMode.GAME_OVER_WIN);//<(e) Si no hay más niveles el player gano el juego
-            }
-        }
-
-        /// <summary>
-        /// Pause tha game
-        /// </summary>
-        public void GamePause()
-        {
-            m_stateMachine.Init(m_pauseState);
+            SceneManager.LoadScene("Opening", LoadSceneMode.Additive);
         }
     }
 } //namespace System.Game
