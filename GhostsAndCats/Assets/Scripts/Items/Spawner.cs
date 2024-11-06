@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Items
@@ -8,6 +9,7 @@ namespace Items
 
         public void Spawn(Vector3 p_position)
         {
+            //<(i) Clones the object original and returns the clone. This function makes a copy of an object in a similar way to the Duplicate command in the editor. 
             Instantiate(m_item, p_position, Quaternion.identity);
         }
     }

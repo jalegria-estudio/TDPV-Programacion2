@@ -1,28 +1,27 @@
+using System;
 using UnityEngine;
 
 namespace Managers
 {
+    /// <summary>
+    /// Audio manager
+    /// </summary>
     public class AudioManager : MonoBehaviour
     {
-        [Header("Configuration")]
-        [SerializeField] AudioClip m_sfxJump = null;
-        [SerializeField] AudioClip m_sfxDefeat = null;
-        [SerializeField] AudioClip m_sfxDamage = null;
-        [SerializeField] AudioClip m_sfxCollect = null;
-        [SerializeField] AudioClip m_sfxStomp = null;
-
+        ///// COMPONENTS /////
+        protected PlayerData m_data = null;
         protected Rigidbody2D m_rigidBody = null;
         protected InputController m_inputController = null;
         protected SpriteRenderer m_spriteRenderer = null;
         protected Animator m_animator = null;
         protected AudioSource m_audioSourcer = null;
 
-
         protected void Awake()
         {
             m_audioSourcer = this.gameObject.GetComponent<AudioSource>();
             m_rigidBody = this.gameObject.GetComponent<Rigidbody2D>();
             m_inputController = this.gameObject.GetComponent<InputController>();
+            m_data = this.gameObject.GetComponent<Player>().Data;
 
             configEvents();
         }
@@ -35,7 +34,20 @@ namespace Managers
             {
                 l_jumper.EVT_JUMP -= OnJumpSfx;
             }
+
+            ///Stomp Event///
+            if (this.gameObject.GetComponent<Player>())
+                this.gameObject.GetComponent<Player>().EVT_STOMP -= OnStompSfx;
+
+            /// 1-UP ///
+            if (this.gameObject.GetComponent<ExperienceManager>())
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP -= On1UpSfx;
+
         }
+
+        /// <summary>
+        /// Suscribe to events of observer pattern
+        /// </summary>
         protected void configEvents()
         {
             ///Jump Event///
@@ -46,8 +58,20 @@ namespace Managers
             }
 
             ///Stomp Event///
-            this.gameObject.GetComponent<Player>().EVT_STOMP += OnStompSfx;
+            if (this.gameObject.GetComponent<Player>() != null)
+                this.gameObject.GetComponent<Player>().EVT_STOMP += OnStompSfx;
+
+            /// 1-UP ///
+            if (this.gameObject.GetComponent<ExperienceManager>() != null)
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP += On1UpSfx;
+
         }
+
+        /// <summary>
+        /// Play one-shot for a audio clip
+        /// </summary>
+        /// <param name="p_audio">Audio Clip Object</param>
+        /// <returns>Return false if audio source is playing other sound</returns>
         public bool Play(AudioClip p_audio)
         {
             if (m_audioSourcer.isPlaying)
@@ -57,28 +81,33 @@ namespace Managers
             return true;
         }
 
+        ///////////////////////////////////
+        /// ACTIONS SOUNDS
+        ///////////////////////////////////
+
         public void OnJumpSfx()
         {
-            this.Play(m_sfxJump);
+            this.Play(m_data.SfxJump);
         }
 
         public void OnStompSfx()
         {
-            this.Play(m_sfxStomp);
+            this.Play(m_data.SfxStomp);
         }
 
         public void OnDamageSfx()
         {
-            this.Play(m_sfxDamage);
-        }
-        public void OnDefeatSfx()
-        {
-            this.Play(m_sfxDefeat);
+            this.Play(m_data.SfxDamage);
         }
 
-        public void OnCollectSfx()
+        public void OnDefeatSfx()
         {
-            this.Play(m_sfxCollect);
+            this.Play(m_data.SfxDefeat);
+        }
+
+        private void On1UpSfx()
+        {
+            this.Play(m_data.Sfx1up);
         }
     }
 } //namespace Managers

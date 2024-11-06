@@ -13,6 +13,18 @@ TagManager:
   - tWall
   - tItem
   - tItemSpawner
+  - tRules
+  - tGameOverText
+  - tMagicBox
+  - tStartButton
+  - tGoal
+  - tLevel
+  - tCameraBounds
+  - tCameraBoundsHorizontal
+  - tItemTuna
+  - tItemSoul
+  - tCreditsButton
+  - tBoss
   layers:
   - Default
   - TransparentFX

@@ -1,16 +1,21 @@
+using Settings;
 using UnityEngine;
 
 namespace Managers
 {
+    /// <summary>
+    /// Animation Manager
+    /// </summary>
     public class AnimeManager : MonoBehaviour
     {
-        [Header("Configuration")]
-        [SerializeField] float m_inputH = 0.0f;
-        [SerializeField] float m_inputV = 0.0f;
-
+        ///// COMPONENTS /////
         protected Rigidbody2D m_rigidBody = null;
         protected SpriteRenderer m_spriteRenderer = null;
         protected Animator m_animator = null;
+
+        ///// STATUS /////
+        float m_inputH = 0.0f;
+        float m_inputV = 0.0f;
 
         // Called when the object becomes enabled and active, always after Awake (on the same object) and before any Start.
         //Source: https://docs.unity3d.com/Manual/ExecutionOrder.html
@@ -44,18 +49,53 @@ namespace Managers
             m_inputV = Input.GetAxisRaw("Vertical");
         }
 
+        /// <summary>
+        /// Indicate if animation is playing
+        /// </summary>
+        /// <param name="p_animeName">Animation clip name</param>
+        /// <returns>boolean</returns>
+        public bool IsPlaying(string p_animeName)
+        {
+            AnimatorStateInfo l_currentState = m_animator.GetCurrentAnimatorStateInfo(Config.ANIMATOR_BASE_LAYER);
+            bool l_state = l_currentState.IsName(p_animeName);
+            return l_state;
+        }
+
+        /// <summary>
+        /// Reset animator parameters
+        /// </summary>
+        protected void resetParameters()
+        {
+            m_animator.SetInteger("pInputV", 0);
+            m_animator.SetInteger("pInputH", 0);
+            m_animator.SetInteger("pVelocityV", 0);
+            m_animator.SetBool("pDucked", false);
+        }
+
+        ///////////////////////////////////
+        /// OBSERVER PATTERN SUSCRIPTION
+        ///////////////////////////////////
         protected void subscribesToEvents()
         {
-            if (gameObject.GetComponent<WalkManager>())
+            if (gameObject.GetComponent<WalkManager>() != null)
                 gameObject.GetComponent<WalkManager>().EVT_DUCK += HandleDuck;
+
+            if (gameObject.GetComponent<ExperienceManager>() != null)
+                gameObject.GetComponent<ExperienceManager>().EVT_1UP += Handle1Up;
         }
 
         protected void unsubscribesToEvents()
         {
-            if (gameObject.GetComponent<WalkManager>())
+            if (gameObject.GetComponent<WalkManager>() != null)
                 gameObject.GetComponent<WalkManager>().EVT_DUCK -= HandleDuck;
+
+            if (gameObject.GetComponent<ExperienceManager>() != null)
+                gameObject.GetComponent<ExperienceManager>().EVT_1UP -= Handle1Up;
         }
 
+        ///////////////////////////////////
+        /// ACTIONS HANDLER
+        ///////////////////////////////////
         public void HandleInput()
         {
             int l_anime = 0;
@@ -79,7 +119,6 @@ namespace Managers
 
         public void HandleDamage()
         {
-            //m_animator.Play("Base Layer.Damage");
             resetParameters();
             m_animator.SetTrigger("pDamaged");
         }
@@ -95,19 +134,9 @@ namespace Managers
             m_animator.SetBool("pDucked", p_ducked);
         }
 
-        public bool isPlaying(string p_animeName)
+        public void Handle1Up()
         {
-            AnimatorStateInfo l_currentState = m_animator.GetCurrentAnimatorStateInfo(0);
-            bool l_state = l_currentState.IsName(p_animeName);
-            return l_state;
-        }
-
-        protected void resetParameters()
-        {
-            m_animator.SetInteger("pInputV", 0);
-            m_animator.SetInteger("pInputH", 0);
-            m_animator.SetInteger("pVelocityV", 0);
-            m_animator.SetBool("pDucked", false);
+            m_animator.SetTrigger("p1up");
         }
     }
 }//namespace Managers

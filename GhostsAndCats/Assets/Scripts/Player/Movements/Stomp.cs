@@ -17,7 +17,24 @@ namespace Movements
             //this.gameObject.GetComponent<PlayerInputHandler>().Plop(5.0f);
             Moves.Plop(p_rigidBody, 5.0f);
             //p_collider.gameObject.SetActive(false);
-            p_collider.gameObject.GetComponent<Enemy>().OnDefeat();
+
+            ManageColliderOnStomp(p_collider); /// <(!!!) MUST REFACTOR TO ENEMY CLASS AND GHOSTY CLASS
+        }
+
+        public static void ManageColliderOnStomp(Collider2D p_collider)
+        {
+            /// <(!!!) MUST REFACTOR TO ENEMY CLASS AND GHOSTY CLASS
+            if (p_collider.CompareTag("tEnemy"))
+            {
+                if (p_collider.gameObject.TryGetComponent<Enemy>(out Enemy l_enemy))
+                {
+                    l_enemy.OnDefeat();
+                }
+                else if (p_collider.gameObject.TryGetComponent<Ghosty>(out Ghosty l_ghosty))
+                {
+                    l_ghosty.OnDefeat();
+                }
+            }
         }
     }
 }

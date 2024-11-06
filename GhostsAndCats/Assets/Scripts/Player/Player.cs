@@ -1,40 +1,51 @@
 ﻿using Managers;
 using Movements;
 using Settings;
+using System;
+using System.ComponentModel;
 using UnityEngine;
 
 [RequireComponent(typeof(InputController), typeof(AnimeManager), typeof(AudioManager))]
 public class Player : MonoBehaviour
 {
+    ///// SCRIPTABLE OBJECT /////
+    [SerializeField] protected PlayerData m_data;
+
     ///// EVENT ACTIONS /////
     //** Observer pattern => Managing Game Events with the Event Bus
     public event System.Action EVT_STOMP;
+    public event System.Action EVT_GOAL;
+    public event System.Action EVT_COLLECT_TUNA;
+    public event System.Action EVT_COLLECT_SOUL;
 
     ///// CONFIG INSPECTOR /////
-    [Header("Configuration")]
-    [SerializeField] protected bool m_damaged = false;
-    [SerializeField] protected int m_lifes = 5;
-    [SerializeField] protected Vector2 m_spawnPosition = new Vector2(Config.PLAYER_SPAWN_POSX_DEFAULT, Config.PLAYER_SPAWN_POSY_DEFAULT);
+    protected bool m_disabled = false;
+    protected bool m_damaged = false;
+    protected int m_lifes = 0;
+    protected Vector2 m_spawnPos = Vector2.zero;
+    public Vector2 SpawnPosition { get => m_spawnPos; set => m_spawnPos = value; }
+
     ///[SerializeField] protected EnemyGenericDamage m_enemy; //<(i) Observer Pattern <= Obsolete
     protected InputController m_inputController = null;
     protected AnimeManager m_animeManager = null;
     protected AudioManager m_audioManager = null;
+    public PlayerData Data { get => m_data; }
 
-    public int Lifes { get => m_lifes; }
-    public void RemoveLifes(int p_qty = 1)
+    /// <summary>
+    /// Indicate if player is defeated. eq.-lifes equals 0.
+    /// </summary>
+    public bool IsDefeated()
     {
-        if (m_lifes > 0 && m_lifes >= p_qty)
-            m_lifes -= p_qty;
+        return m_data.Lifes == 0;
     }
 
-    public void AddLifes(int p_qty = 1)
+    /// <summary>
+    /// Reset player position to spawn position
+    /// </summary>
+    public void TranslateToSpawnPosition()
     {
-        m_lifes += p_qty;
-    }
-
-    public bool isDefeated()
-    {
-        return m_lifes == 0;
+        this.gameObject.transform.position = new Vector3(SpawnPosition.x, SpawnPosition.y, transform.position.z);
+        Camera.main.GetComponent<FollowerCamera>().SetCameraPosition(SpawnPosition);
     }
 
     // Start is called before the first frame update: Start is only ever called once for a given script.
@@ -49,26 +60,45 @@ public class Player : MonoBehaviour
     // Update is called once per frame [variable intervale]
     protected void Update()
     {
-        m_damaged = m_animeManager.isPlaying("Damage");
-        DisableWhenDamaged();
+        m_damaged = m_animeManager.IsPlaying("Damage");
+        EnableActions();
     }
 
     //Sent when another object enters a trigger collider attached to this object (2D physics only).
     protected void OnTriggerEnter2D(Collider2D p_collider)
     {
+#if GAME_DEBUG
         Debug.Log($"<DEBUG> {this.name} > Entered on trigger game-object: Name->{p_collider.name}. Tag->{p_collider.tag}");
-
-        if (p_collider.isTrigger && p_collider.CompareTag("tAbyss"))
+#endif
+        if (p_collider.isTrigger)
         {
-            OnDamaged();
+            switch (p_collider.tag)
+            {
+                case "tAbyss":
+                    OnDamaged();
+                    break;
+                case "tGoal":
+                    OnGoal();
+                    break;
+                case "tItemTuna":
+                    if (p_collider.isActiveAndEnabled)
+                        EVT_COLLECT_TUNA?.Invoke();
+                    break;
+                case "tItemSoul":
+                    EVT_COLLECT_SOUL?.Invoke();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
     //Event handler: Sent when an incoming collider makes contact with this object's collider (2D physics only).
     protected void OnCollisionEnter2D(Collision2D p_collision)
     {
+#if GAME_DEBUG
         Debug.Log($"<DEBUG> {this.name} > Touched a game-object: Name->{p_collision.collider.name}. Tag->{p_collision.collider.tag}");
-
+#endif
         if (p_collision.collider.CompareTag("tEnemy"))
         {
             ContactPoint2D l_contactPoint = p_collision.GetContact(0);
@@ -79,9 +109,10 @@ public class Player : MonoBehaviour
                 HandleEnemyDamageCollision(l_contactPoint);
         }
 
-        if (p_collision.collider.CompareTag("tItem"))
+        if (p_collision.collider.CompareTag("tBoss"))
         {
-            m_audioManager.OnCollectSfx();
+            ContactPoint2D l_contactPoint = p_collision.GetContact(0);
+            HandleEnemyDamageCollision(l_contactPoint);
         }
     }
 
@@ -116,8 +147,9 @@ public class Player : MonoBehaviour
     /// </summary>
     protected void OnDamaged()
     {
-        RemoveLifes();
-        if (isDefeated())
+        m_data.RemoveLifes();
+
+        if (IsDefeated())
         {
             m_audioManager.OnDefeatSfx();
             m_animeManager.HandleDefeat();
@@ -128,17 +160,44 @@ public class Player : MonoBehaviour
             m_audioManager.OnDamageSfx();
             m_animeManager.HandleDamage();
             m_damaged = true;
-            transform.position = m_spawnPosition;
+            //transform.position = m_data.SpawnPosition;
+            TranslateToSpawnPosition();
         }
     }
 
-    protected void DisableWhenDamaged()
+    /// <summary>
+    /// Enable Player for actions
+    /// </summary>
+    protected void EnableActions()
     {
-        m_inputController.enabled = !m_damaged && !isDefeated();
-
-        if (!m_damaged & !isDefeated())
+        if (!m_damaged && !this.IsDefeated())
+        {
+            m_inputController.enabled = true;
             m_animeManager.HandleInput();
+        }
     }
+
+    public void DisableActions()
+    {
+        m_inputController.GetComponent<JumpManager>().enabled = false;
+        m_inputController.GetComponent<WalkManager>().enabled = false;
+        m_animeManager.enabled = false;
+    }
+
+    /// <summary>
+    /// Trigger the Goal Event when player arrives to goal
+    /// </summary>
+    protected void OnGoal()
+    {
+        LevelData l_levelData = GameObject.FindFirstObjectByType<Level>().Data;
+
+        //if (m_data.Souls >= l_levelData.m_requiredSoulsQty)
+        if (gameObject.GetComponent<ExperienceManager>().IsReadyGoal())
+        {
+            EVT_GOAL?.Invoke();
+        }
+    }
+
 }
 
 ////////////////////////////////////////////////////////////

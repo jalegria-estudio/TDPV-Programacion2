@@ -2,8 +2,14 @@ using Movements;
 using Toolbox;
 using UnityEngine;
 
+/// <summary>
+/// Enemy movements manager
+/// </summary>
 public class EnemyGenericHandler : MonoBehaviour
 {
+    /// <summary>
+    /// Enemy movements availables
+    /// </summary>
     public enum MoveType
     {
         GuidedHorizontal,
@@ -23,6 +29,9 @@ public class EnemyGenericHandler : MonoBehaviour
     [SerializeField] protected Vector2 m_moveDir = Vector2.zero;
     protected int m_automataToken = 0;
 
+    /// <summary>
+    /// Setter and getter enemy move direction
+    /// </summary>
     public Vector2 MoveDirection { get => m_moveDir; set => m_moveDir = value; }
 
     //Editor-only function that Unity calls when the script is loaded or a value changes in the Inspector.
@@ -31,7 +40,10 @@ public class EnemyGenericHandler : MonoBehaviour
         //Don't delete
     }
 
-    public void setupMoveDirection()
+    /// <summary>
+    /// this function set the movement direction from selected enemy's type move
+    /// </summary>
+    public void SetupMoveDirection()
     {
         GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 
@@ -48,7 +60,10 @@ public class EnemyGenericHandler : MonoBehaviour
             m_moveDir = new Vector2(-1, 1);
     }
 
-    public void updateMovePerformance()
+    /// <summary>
+    /// This function must be called to move the enemy game object
+    /// </summary>
+    public void UpdateMovePerformance()
     {
         if (m_moveType == MoveType.GuidedHorizontal)
             HandleGuidedMoveH();

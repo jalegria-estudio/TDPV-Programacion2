@@ -1,5 +1,9 @@
 using Managers;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(JumpManager), typeof(WalkManager))]
 public class InputController : MonoBehaviour
@@ -32,6 +36,8 @@ public class InputController : MonoBehaviour
         m_WalkManager.Run = Input.GetKey(KeyCode.Q);
         m_WalkManager.Duck = Input.GetKey(KeyCode.DownArrow);
         m_JumpManager.Jump = Input.GetKey(KeyCode.UpArrow);
+
+        OnPressHelp();
     }
 
     // Update is called once per frame [fixed intervale]
@@ -42,5 +48,20 @@ public class InputController : MonoBehaviour
 
         if (m_WalkManager.enabled)
             m_WalkManager.HandleInput(m_inputPlayerHorizontal);
+    }
+
+    /// <summary>
+    /// Display info about player controls on screen
+    /// </summary>
+    protected void OnPressHelp()
+    {
+        if (!Input.GetKeyDown(KeyCode.H))
+            return;
+
+        GameObject l_rules = GameObject.Find("Rules");
+        Text l_text = l_rules.GetComponent<Text>();
+
+        if (l_rules)
+            l_text.enabled = !l_text.enabled;
     }
 }
