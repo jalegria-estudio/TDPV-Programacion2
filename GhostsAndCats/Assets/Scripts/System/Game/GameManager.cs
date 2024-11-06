@@ -12,6 +12,8 @@ namespace System.Game
     {
         [Header("Configuration")]
         [SerializeField] protected bool m_autoStart = false;
+        [Tooltip("Set on Autostart and insert a level ID. Value 2 the game starts in stage 1-1!")]
+        [SerializeField] protected uint m_startLevel = 0;
 
         internal States.StatePlaying m_playingState;
         internal States.StateGameOver m_gameOverState;
@@ -58,7 +60,9 @@ namespace System.Game
         {
             if (m_autoStart)
             {
-                MoveNextLevel();
+                if (m_startLevel > 1)
+                    m_levelManager.GoToLevel(m_startLevel);
+
                 GamePlay();
             }
             else

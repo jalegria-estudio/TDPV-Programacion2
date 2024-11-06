@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b80842756b5c8c44a922dffa65fce18, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: 
-  m_lifes: 45
+  m_lifes: 7
   m_defaultLifes: 7
   m_tunas: 0
   m_defaultTunas: 0
-  m_souls: 2
+  m_souls: 0
   m_defaultSouls: 0
   m_cost1Up: 30
   m_walkSpeed: 2
@@ -28,4 +28,4 @@ MonoBehaviour:
   m_sfxDefeat: {fileID: 8300000, guid: 1e21fdc4e2e7081459ed12a8d643012f, type: 3}
   m_sfxDamage: {fileID: 8300000, guid: 2d4bcda8c2b4301409454ab6ba3f75bc, type: 3}
   m_sfxStomp: {fileID: 8300000, guid: 37d9aa78466e2284db672b5fd687efbc, type: 3}
-  m_sfx1up: {fileID: 8300000, guid: 7c858999fe1d30d4fb9de91e98bd4bf2, type: 3}
+  m_sfx1up: {fileID: 8300000, guid: ced40fc655a49934faf991a02d407045, type: 3}

@@ -53,16 +53,21 @@ namespace System.Game
             m_levels.Add("Main");
             m_levels.Add("Level1-1");
             m_levels.Add("Level1-2");
+            m_levels.Add("Level1-3");
 
             /// Suscription to SceneManager Events => https://docs.unity3d.com/2022.3/Documentation/ScriptReference/SceneManagement.SceneManager.html
             SceneManager.sceneLoaded += OnLoadedLevel;
         }
 
+        /////////////////////////
+        /// LOW-LEVEL METHODS
+        ////////////////////////
+
         /// <summary>
-        /// Enable a game object level
+        /// /Low-Level/ Enable a game object level
         /// </summary>
         /// <param name="p_levelID">Level Index</param>
-        public void Active(int p_levelID)
+        protected void Active(int p_levelID)
         {
             if (p_levelID < 0 || p_levelID > m_levels.Count)
             {
@@ -76,10 +81,10 @@ namespace System.Game
         }
 
         /// <summary>
-        /// Disable a game object level
+        /// /Low-Level/ Disable a game object level
         /// </summary>
         /// <param name="p_levelID">Level Index</param>
-        public void Inactive(int p_levelID)
+        protected void Inactive(int p_levelID)
         {
             if (p_levelID <= 0 || p_levelID > m_levels.Count)
             {
@@ -90,6 +95,10 @@ namespace System.Game
             //m_levels[p_levelID].SetActive(false);
             SceneManager.UnloadSceneAsync(m_levels[p_levelID]);
         }
+
+        //////////////////////////////
+        /// LEVELS MANAGERS METHODS
+        /////////////////////////////
 
         /// <summary>
         /// It moves to the next level
@@ -105,6 +114,24 @@ namespace System.Game
                 Inactive(m_currentLevel);
 
             m_currentLevel++;
+            Active(m_currentLevel);
+
+            return true;
+        }
+
+        public bool GoToLevel(uint p_lvlID)
+        {
+            if (p_lvlID > m_levels.Count || p_lvlID <= 0)
+            {
+                Debug.LogWarning($"<DEBUG> Attempt to go to out-rangue level! Out-rangue Level-ID:{p_lvlID}. Don't use ID0 because it is used by system.!");
+
+                return false;
+            }
+
+            if (m_currentLevel != 0) //<(e) The game scene is Game Scene = id0
+                Inactive(m_currentLevel);
+
+            m_currentLevel = (int)p_lvlID;
             Active(m_currentLevel);
 
             return true;
@@ -136,6 +163,10 @@ namespace System.Game
             SetupLevel();
         }
 
+        ////////////////////////
+        /// SETUPS
+        ///////////////////////
+
         /// <summary>
         /// Config level and player data object
         /// </summary>
@@ -156,7 +187,6 @@ namespace System.Game
 
             return true;
         }
-
 
         /// <summary>
         /// Config main camera with Level Data in Game scene follower-camera component

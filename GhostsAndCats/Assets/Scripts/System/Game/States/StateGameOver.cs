@@ -38,7 +38,8 @@ namespace System.Game.States
         /// <summary>
         public void Enter()
         {
-            GameObject.FindGameObjectWithTag("tPlayer").SetActive(false);
+            GameObject l_player = GameObject.FindGameObjectWithTag("tPlayer");
+            l_player.GetComponent<Player>().DisableActions();
 
             Debug.Log("GAME OVER!");
             switch (m_mode)

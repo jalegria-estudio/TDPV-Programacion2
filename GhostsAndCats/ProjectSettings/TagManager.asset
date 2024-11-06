@@ -24,6 +24,7 @@ TagManager:
   - tItemTuna
   - tItemSoul
   - tCreditsButton
+  - tBoss
   layers:
   - Default
   - TransparentFX

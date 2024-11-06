@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     public event System.Action EVT_COLLECT_SOUL;
 
     ///// CONFIG INSPECTOR /////
+    protected bool m_disabled = false;
     protected bool m_damaged = false;
     protected int m_lifes = 0;
     protected Vector2 m_spawnPos = Vector2.zero;
@@ -107,6 +108,12 @@ public class Player : MonoBehaviour
             else
                 HandleEnemyDamageCollision(l_contactPoint);
         }
+
+        if (p_collision.collider.CompareTag("tBoss"))
+        {
+            ContactPoint2D l_contactPoint = p_collision.GetContact(0);
+            HandleEnemyDamageCollision(l_contactPoint);
+        }
     }
 
     /// <summary>
@@ -168,6 +175,13 @@ public class Player : MonoBehaviour
             m_inputController.enabled = true;
             m_animeManager.HandleInput();
         }
+    }
+
+    public void DisableActions()
+    {
+        m_inputController.GetComponent<JumpManager>().enabled = false;
+        m_inputController.GetComponent<WalkManager>().enabled = false;
+        m_animeManager.enabled = false;
     }
 
     /// <summary>
