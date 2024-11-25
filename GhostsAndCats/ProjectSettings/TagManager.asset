@@ -25,6 +25,11 @@ TagManager:
   - tItemSoul
   - tCreditsButton
   - tBoss
+  - tStageClear
+  - tJukebox
+  - tJukeboxLevel
+  - tHelpButton
+  - tSkipButton
   layers:
   - Default
   - TransparentFX
