@@ -1,16 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Game;
 using UnityEngine;
 
+/// <summary>
+/// Boss Enemy Class
+/// </summary>
 public class Boss : MonoBehaviour
 {
+    /////////////////////////////////////
+    /// EVENTS
+    ////////////////////////////////////
+    public event System.Action EVT_KNOCK;
+    public event System.Action EVT_KNOCK_OUT;
+
     /////////////////////////////////////
     /// CONFIGURATION EDITOR ATTRIBUTES
     ////////////////////////////////////
     [Header("Boss Configuraton")]
     [Range(0, 10)]
     [SerializeField] protected int m_lifes = 5;
+    [SerializeField] protected int m_bossScore = 1000;
+    [SerializeField] protected int m_GhostyScore = 100;
     [Header("Sounds")]
     [SerializeField] AudioClip m_sfxScare = null;
     [SerializeField] AudioClip m_sfxKnockOut = null;
@@ -36,15 +45,15 @@ public class Boss : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetupPool();
-        m_jukebox = gameObject.GetComponent<AudioSource>();
+        this.SetupPool();
+        this.m_jukebox = this.gameObject.GetComponent<AudioSource>();
     }
 
     public void Update()
     {
-        if (m_lifes <= 0 && !m_knockOut)
+        if (this.m_lifes <= 0 && !this.m_knockOut)
         {
-            KnockOut();
+            this.KnockOut();
         }
     }
 
@@ -53,15 +62,15 @@ public class Boss : MonoBehaviour
     /// </summary>
     public void SummonAGhosty()
     {
-        if (m_knockOut)
+        if (this.m_knockOut)
             return;
 
-        m_jukebox.PlayOneShot(m_sfxAngry);
+        this.m_jukebox.PlayOneShot(this.m_sfxAngry);
 
-        if (m_pool.Count == 0)
+        if (this.m_pool.Count == 0)
             return;
 
-        GetFromPool();
+        this.GetFromPool();
     }
 
     /////////////////////////////////
@@ -73,17 +82,18 @@ public class Boss : MonoBehaviour
     /// </summary>
     protected void SetupPool()
     {
-        m_pool = new Stack<Ghosty>();
+        this.m_pool = new Stack<Ghosty>();
         Ghosty l_poolableGhosty;
 
-        for (uint i = 0; i < m_poolSize; i++)
+        for (uint i = 0; i < this.m_poolSize; i++)
         {
-            l_poolableGhosty = Instantiate(m_ghosty);
+            l_poolableGhosty = Instantiate(this.m_ghosty, this.transform); //<(!) I use the transform to add a ghosty with boss as parent and easy destroy
+            l_poolableGhosty.transform.localScale = new Vector3(0.5f, 0.5f, 1); //<(!) To reduce the normal size from parent transform
             l_poolableGhosty.Pool = this;
             l_poolableGhosty.IndexPos = i; //<(i) Make a reverse position to appear not so sticky
             l_poolableGhosty.UpdatePos();
             l_poolableGhosty.gameObject.SetActive(false);
-            m_pool.Push(l_poolableGhosty);
+            this.m_pool.Push(l_poolableGhosty);
         }
     }
 
@@ -92,10 +102,10 @@ public class Boss : MonoBehaviour
     /// </summary>
     public void ReturnToPool(Ghosty p_object)
     {
-        p_object.EVT_DEFEAT -= OnKnock;
+        p_object.EVT_DEFEAT -= this.OnKnock;
         //p_object.GetComponent<SpriteRenderer>().color = Color.white;
         p_object.gameObject.SetActive(false);
-        m_pool.Push(p_object);
+        this.m_pool.Push(p_object);
     }
 
     /// <summary>
@@ -105,18 +115,18 @@ public class Boss : MonoBehaviour
     {
         Ghosty l_object = null;
 
-        if (m_pool.Count != 0)
+        if (this.m_pool.Count != 0)
         {
-            l_object = m_pool.Pop();
+            l_object = this.m_pool.Pop();
             l_object.gameObject.SetActive(true);
         }
         else
         {
-            l_object = Instantiate(m_ghosty);
-            m_ghosty.Pool = this;
+            l_object = Instantiate(this.m_ghosty, this.transform);
+            this.m_ghosty.Pool = this;
         }
 
-        l_object.EVT_DEFEAT += OnKnock;
+        l_object.EVT_DEFEAT += this.OnKnock;
 
         return l_object;
     }
@@ -130,13 +140,16 @@ public class Boss : MonoBehaviour
     /// </summary>
     protected void OnKnock()
     {
-        m_lifes--;
-
         if (this.gameObject.TryGetComponent<Animator>(out Animator l_animator))
         {
             l_animator.SetTrigger("pKnock");
-            m_jukebox.PlayOneShot(m_sfxSad);
+            this.m_jukebox.PlayOneShot(this.m_sfxSad);
+            this.m_lifes--;
+            this.EVT_KNOCK?.Invoke();
+            return;
         }
+
+        Debug.Assert(l_animator != null, "<DEBUG ASSERT> Can not knock the boss! There isn't boss animator.");
     }
 
     /// <summary>
@@ -147,18 +160,19 @@ public class Boss : MonoBehaviour
         if (this.gameObject.TryGetComponent<Animator>(out Animator l_animator))
         {
             l_animator.SetTrigger("pKnockOut");
-            m_jukebox.PlayOneShot(m_sfxKnockOut);
+            this.m_jukebox.PlayOneShot(this.m_sfxKnockOut);
         }
 
         Ghosty[] l_ghosties = GameObject.FindObjectsOfType<Ghosty>();
         for (int i = 0; i < l_ghosties.Length; i++)
         {
             l_ghosties[i].AnimeDefeat();
-            ReturnToPool(l_ghosties[i]);
+            this.ReturnToPool(l_ghosties[i]);
         }
 
-        m_knockOut = true;
-        GameObject.Find("GameManager").GetComponent<GameManager>().MoveNextLevel();
+        this.m_pool.Clear();
+
+        this.m_knockOut = true;
     }
 
     /// <summary>
@@ -166,6 +180,14 @@ public class Boss : MonoBehaviour
     /// </summary>
     public void OnScare()
     {
-        m_jukebox.PlayOneShot(m_sfxScare);
+        this.m_jukebox.PlayOneShot(this.m_sfxScare);
+    }
+
+    /// <summary>
+    /// Callback when the boss disappeared from screen
+    /// </summary>
+    public void OnDisappear()
+    {
+        EVT_KNOCK_OUT?.Invoke();
     }
 }

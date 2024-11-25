@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74707898436b9ca4da2af5a6c90797a0, type: 3}
   m_Name: LevelData1_3
   m_EditorClassIdentifier: 
-  m_name: Level1-3
+  m_name: Haunted House
   m_level: 1
   m_sublevel: 3
+  m_time: 300
   m_requiredSoulsQty: 0
   m_startPoint: {x: 0, y: -7}
   m_goalPoint: {x: 10, y: 10}
   m_defaultCameraPosition: {x: 0, y: -3, z: -12}
+  m_showReport: 0
+  m_audioClipGameplay: {fileID: 8300000, guid: 5a215bcc95a76334f9d7022796cb4f0b, type: 3}
+  m_showStageRound: 1
+  m_audioClipStageRound: {fileID: 8300000, guid: eb3b5355f52b9654b8ffa5da2606dce2, type: 3}
+  m_waitTime: 3.5

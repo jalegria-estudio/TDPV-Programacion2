@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7070416017901924521}
   - component: {fileID: 2383815324546160532}
   - component: {fileID: 5116060190668543533}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: SplashEmitter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4919,7 +4919,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7070416017901924521}
   m_Father: {fileID: 0}
@@ -5591,7 +5591,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 1
-    maxNumParticles: 1000
+    maxNumParticles: 10000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -5738,7 +5738,7 @@ ParticleSystem:
     sphericalDirectionAmount: 1
     randomPositionAmount: 0
     radius:
-      value: 88
+      value: 95
       mode: 0
       spread: 0
       speed:
@@ -5857,7 +5857,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1000
+      scalar: 2000
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -9831,4 +9831,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_jukebox: {fileID: 2672164721630944871}
   m_startTime: 10
-  m_duration: 3600
+  m_duration: 120

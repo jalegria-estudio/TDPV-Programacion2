@@ -16,11 +16,17 @@ MonoBehaviour:
   m_defaultLifes: 7
   m_tunas: 0
   m_defaultTunas: 0
+  m_tunaScore: 0
   m_souls: 0
   m_defaultSouls: 0
+  m_soulScore: 0
+  m_score: 0
+  m_hiscore: 0
+  m_timeScore: 1
+  m_knockOutScore: 1000
   m_cost1Up: 30
   m_walkSpeed: 2
-  m_runSpeed: 5
+  m_runSpeed: 4.5
   m_duckSpeed: 0.5
   m_impulse: 6.9
   m_impulseUp: 0.25
@@ -28,4 +34,9 @@ MonoBehaviour:
   m_sfxDefeat: {fileID: 8300000, guid: 1e21fdc4e2e7081459ed12a8d643012f, type: 3}
   m_sfxDamage: {fileID: 8300000, guid: 2d4bcda8c2b4301409454ab6ba3f75bc, type: 3}
   m_sfxStomp: {fileID: 8300000, guid: 37d9aa78466e2284db672b5fd687efbc, type: 3}
-  m_sfx1up: {fileID: 8300000, guid: ced40fc655a49934faf991a02d407045, type: 3}
+  m_sfx1up: {fileID: 8300000, guid: 81e4a19678bc78d429afa89afdc76659, type: 3}
+  m_sfxScore: {fileID: 8300000, guid: 33a9120628048af4cb19e03e4cc09d60, type: 3}
+  m_sfxScoreTime: {fileID: 8300000, guid: 7668292e9b953b54ab6e5668d00bf5eb, type: 3}
+  m_sfxScoreBoss: {fileID: 8300000, guid: 205c04ef9d3d3d3428b76670130e3e2c, type: 3}
+  m_sfxStageClear: {fileID: 8300000, guid: 4b2c4a6579797ad4082f6366d2b1087e, type: 3}
+  m_sfxHiScore: {fileID: 8300000, guid: 7c858999fe1d30d4fb9de91e98bd4bf2, type: 3}

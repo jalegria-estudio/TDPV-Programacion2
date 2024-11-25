@@ -13,6 +13,8 @@
  * @author: Juan P. Alegria
  * @date 2024-10-05
  */
+#define GAME_DEBUG
+#undef GAME_DEBUG
 
 using UnityEngine;
 
@@ -27,18 +29,21 @@ public class FollowerCamera : MonoBehaviour
     [SerializeField] GameObject m_objetive = null;
     [SerializeField] Camera m_camera = null;
     [SerializeField] Collider2D m_bounds = null;
-    public bool TurnOn { get => m_turnOn; set => m_turnOn = value; }
+    public bool TurnOn { get => this.m_turnOn; set => this.m_turnOn = value; }
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Assert(m_camera.orthographic, "<DEBUG ASSERT> The Main Camera must be a orthographic camera!");
+        Debug.Assert(this.m_camera.orthographic, "<DEBUG ASSERT> The Main Camera must be a orthographic camera!");
+
+#if GAME_DEBUG
         if (m_bounds == null)
             Debug.LogWarning("<DEBUG> The Follower Camera needs bounds!");
+#endif
         //m_camera = gameObject.GetComponent<Camera>();
         //m_camera.orthographic = true; //Force orthographic camera 
         //m_camera.transform.Translate(m_objetive.transform.position);
-        TranslateCamera();
+        this.TranslateCamera();
     }
 
     /**
@@ -53,7 +58,7 @@ public class FollowerCamera : MonoBehaviour
      */
     void LateUpdate()
     {
-        TranslateCamera();
+        this.TranslateCamera();
         //ShowDebugData();
     }
 
@@ -62,26 +67,26 @@ public class FollowerCamera : MonoBehaviour
     /// </summary>
     protected void TranslateCamera()
     {
-        if (!m_turnOn)
+        if (!this.m_turnOn)
             return;
 
-        float l_viewportHeightHalfSize = m_camera.orthographicSize;
-        float l_viewportWidthHalfSize = m_camera.orthographicSize * m_camera.aspect;//<(e) Es la inversa del aspect ratio =>  The aspect ratio (width divided by height).
-        Vector3 l_cameraPos = m_camera.transform.position;
-        Vector2 l_objetivePos = m_objetive.transform.position;
+        float l_viewportHeightHalfSize = this.m_camera.orthographicSize;
+        float l_viewportWidthHalfSize = this.m_camera.orthographicSize * this.m_camera.aspect;//<(e) Es la inversa del aspect ratio =>  The aspect ratio (width divided by height).
+        Vector3 l_cameraPos = this.m_camera.transform.position;
+        Vector2 l_objetivePos = this.m_objetive.transform.position;
 
-        if (m_bounds == null)
+        if (this.m_bounds == null)
         {
             l_cameraPos = l_objetivePos;
-            m_camera.transform.position = l_cameraPos;
+            this.m_camera.transform.position = l_cameraPos;
             return;
         }
 
         //<(e) Only It updates camera-pos if the viewport (with a new pos) doesn't touch a limit-camera-bounds
         /// Horizontal Limit
         if (
-            (l_objetivePos.x + l_viewportWidthHalfSize) < m_bounds.bounds.max.x &&
-            (l_objetivePos.x - l_viewportWidthHalfSize) > m_bounds.bounds.min.x
+            (l_objetivePos.x + l_viewportWidthHalfSize) < this.m_bounds.bounds.max.x &&
+            (l_objetivePos.x - l_viewportWidthHalfSize) > this.m_bounds.bounds.min.x
         )
         {
             l_cameraPos.x = l_objetivePos.x;
@@ -89,15 +94,15 @@ public class FollowerCamera : MonoBehaviour
 
         /// Vertical Limit
         if (
-            (l_objetivePos.y - l_viewportHeightHalfSize) > m_bounds.bounds.min.y &&
-            (l_objetivePos.y + l_viewportHeightHalfSize) < m_bounds.bounds.max.y
+            (l_objetivePos.y - l_viewportHeightHalfSize) > this.m_bounds.bounds.min.y &&
+            (l_objetivePos.y + l_viewportHeightHalfSize) < this.m_bounds.bounds.max.y
          )
         {
             l_cameraPos.y = l_objetivePos.y;
         }
 
         /// Update Pos
-        m_camera.transform.position = l_cameraPos;
+        this.m_camera.transform.position = l_cameraPos;
     }
 
     /// <summary>
@@ -117,13 +122,15 @@ public class FollowerCamera : MonoBehaviour
         *  Horizontal Size => m_camera.aspect * vertical_size.
         */
         //<(i) When ortho is true, camera's viewing volume is defined by orthographicSize.
-        float l_cameraSize = m_camera.orthographicSize;
-        int l_ppu = m_camera.GetComponent<UnityEngine.U2D.PixelPerfectCamera>().assetsPPU;
+        float l_cameraSize = this.m_camera.orthographicSize;
+        int l_ppu = this.m_camera.GetComponent<UnityEngine.U2D.PixelPerfectCamera>().assetsPPU;
         float l_viewportHeight = l_cameraSize * 2;
-        float l_viewportWidth = l_viewportHeight * m_camera.aspect;
+        float l_viewportWidth = l_viewportHeight * this.m_camera.aspect;
         //(!) NOTAR QUE LA RESOLUCION DEL VIEWPORT FINAL ES LA RESOLUCION DE REFERENCIA DE PIXEL PERFECT SCRIPT => green rect
+#if GAME_DEBUG
         Debug.Log($"Viewport Size => Width: {l_viewportWidth * l_ppu} Height: {l_viewportHeight * l_ppu}");
         Debug.Log($"Camera Rectangle => {m_camera.rect}");
+#endif
     }
 
     /// <summary>
@@ -132,9 +139,9 @@ public class FollowerCamera : MonoBehaviour
     /// <param name="p_cameraBounds"></param>
     public void SetBounds(Collider2D p_cameraBounds)
     {
-        m_camera.gameObject.SetActive(false); //<(!) Reset camera view
-        m_bounds = p_cameraBounds;
-        m_camera.gameObject.SetActive(true);
+        this.m_camera.gameObject.SetActive(false); //<(!) Reset camera view
+        this.m_bounds = p_cameraBounds;
+        this.m_camera.gameObject.SetActive(true);
 
     }
 
@@ -144,9 +151,9 @@ public class FollowerCamera : MonoBehaviour
     /// <param name="p_cameraBounds"></param>
     public void SetCameraPosition(Vector3 p_cameraPos)
     {
-        m_camera.gameObject.SetActive(false); //<(!) Reset camera view
-        m_camera.transform.position = p_cameraPos;
-        m_camera.gameObject.SetActive(true);
+        this.m_camera.gameObject.SetActive(false); //<(!) Reset camera view
+        this.m_camera.transform.position = p_cameraPos;
+        this.m_camera.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -155,8 +162,8 @@ public class FollowerCamera : MonoBehaviour
     /// <param name="p_cameraBounds"></param>
     public void SetCameraPosition(Vector2 p_cameraPos)
     {
-        m_camera.gameObject.SetActive(false); //<(!) Reset camera view
-        m_camera.transform.position = new Vector3(p_cameraPos.x, p_cameraPos.y, m_camera.transform.position.z);
-        m_camera.gameObject.SetActive(true);
+        this.m_camera.gameObject.SetActive(false); //<(!) Reset camera view
+        this.m_camera.transform.position = new Vector3(p_cameraPos.x, p_cameraPos.y, this.m_camera.transform.position.z);
+        this.m_camera.gameObject.SetActive(true);
     }
 }

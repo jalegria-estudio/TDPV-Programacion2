@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿#define GAME_DEBUG
+#undef GAME_DEBUG
+
+using UnityEngine;
 
 namespace System.Game.States
 {
@@ -15,19 +18,22 @@ namespace System.Game.States
         /// </summary>
         public StatePlaying(GameManager p_gameManager)
         {
-            m_gameManager = p_gameManager;
+            this.m_gameManager = p_gameManager;
         }
         /// <summary>
         /// Logic that runs when enter to the state
         /// </summary>
         public void Enter()
         {
+#if GAME_DEBUG
             Debug.Log("Enter to playing state");
-            m_player = GameObject.FindGameObjectWithTag("tPlayer").GetComponent<Player>();
+#endif
+            this.m_player = GameObject.FindGameObjectWithTag("tPlayer").GetComponent<Player>();
             GameObject.FindFirstObjectByType<AudioSource>().Play();
 
-            //<(i) Register evt_goal for when the player finishes the stage
-            m_player.EVT_GOAL += m_gameManager.MoveNextLevel;
+
+            //<(i) Register evt_defeated for when the player finishes the stage by losing
+            this.m_player.EVT_DEFEATED += this.OutFromState;
         }
 
         /// <summary>
@@ -35,8 +41,9 @@ namespace System.Game.States
         /// </summary>
         public void Exit()
         {
+#if GAME_DEBUG
             Debug.Log("Exit from playing state");
-            m_player.EVT_GOAL -= m_gameManager.MoveNextLevel;
+#endif
         }
 
         // Fixed coded logic runs every frame.
@@ -46,11 +53,17 @@ namespace System.Game.States
         // <(!!) En este caso llamo a un metodo del controller (GameManager) para disparar el cambio de estado.
         public void Update()
         {
-            if (m_player.IsDefeated())
+            if (this.m_player.IsDefeated())
             {
-                Debug.Log("PLayer is defeated!");
-                m_gameManager.GameOver(GameOverMode.GAME_OVER_LOSE);
+#if GAME_DEBUG
+                Debug.Log("<DEBUG>Player is defeated!");
+#endif
             }
+        }
+
+        protected void OutFromState()
+        {
+            this.m_gameManager.GameOver(GameOverMode.GAME_OVER_LOSE);
         }
     }// class StatePlaying
 }//namespace System.Game.States

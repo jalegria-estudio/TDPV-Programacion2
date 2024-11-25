@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74707898436b9ca4da2af5a6c90797a0, type: 3}
   m_Name: LevelData1_2
   m_EditorClassIdentifier: 
-  m_name: Level1-2
+  m_name: Spooky Graveyard
   m_level: 1
   m_sublevel: 2
+  m_time: 300
   m_requiredSoulsQty: 5
   m_startPoint: {x: -2.5, y: -5.9}
   m_goalPoint: {x: 171.5, y: -7.5}
   m_defaultCameraPosition: {x: 0, y: -3.4, z: -12}
+  m_showReport: 0
+  m_audioClipGameplay: {fileID: 8300000, guid: a74023b2815da4444b9047f48e1ab725, type: 3}
+  m_showStageRound: 1
+  m_audioClipStageRound: {fileID: 8300000, guid: eb3b5355f52b9654b8ffa5da2606dce2, type: 3}
+  m_waitTime: 3.5

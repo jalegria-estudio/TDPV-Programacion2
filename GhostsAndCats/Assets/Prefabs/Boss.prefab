@@ -76,7 +76,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: fa19eed31d53bf74fa5169303ea206fd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -179,7 +179,6 @@ MonoBehaviour:
   m_sfxKnockOut: {fileID: 8300000, guid: 48794f579eb4eea4ab9fabfd91f7b487, type: 3}
   m_sfxAngry: {fileID: 8300000, guid: 21c40252c96fc3e4aa9e5d1f896c4419, type: 3}
   m_sfxSad: {fileID: 8300000, guid: 7e2bb2a0ae1fde44dbc9084ee433a92a, type: 3}
-  m_knockOut: 0
   m_poolSize: 4
   m_ghosty: {fileID: 3263721594297735653, guid: 4c3cb1e075256864fa157a81834ca414, type: 3}
 --- !u!82 &2783936306864733891

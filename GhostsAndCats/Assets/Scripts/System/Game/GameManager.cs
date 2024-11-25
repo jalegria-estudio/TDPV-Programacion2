@@ -1,52 +1,68 @@
 #define GAME_DEBUG
-//#undef GAME_DEBUG
+#undef GAME_DEBUG
 
 using UnityEngine;
-using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace System.Game
 {
-    public class GameManager : MonoBehaviour // Equivalente a BikeController
+    /// <summary>
+    /// Main Central Game Manager Class
+    /// </summary>
+    public class GameManager : Singleton<GameManager>
     {
         [Header("Configuration")]
+        [Tooltip("Autostart the game without opening on specific level")]
         [SerializeField] protected bool m_autoStart = false;
         [Tooltip("Set on Autostart and insert a level ID. Value 2 the game starts in stage 1-1!")]
         [SerializeField] protected uint m_startLevel = 0;
 
+        ///////////////////
+        /// GAMES STATES
+        /////////////////
         internal States.StatePlaying m_playingState;
         internal States.StateGameOver m_gameOverState;
         internal States.StatePause m_pauseState;
 
         protected GameStateMachine m_stateMachine = null;
         protected LevelManager m_levelManager = null;
+        protected Services.SmsService m_smsService = null;
+        protected Services.TimerService m_timerService = null;
+        protected Services.AudioService m_audioService = null;
         protected GameObject m_level = null;
 
-        public Type State { get => m_stateMachine.m_currentState.GetType(); }
+        public IGameState State { get => this.m_stateMachine.m_currentState; }
+        public LevelManager LevelManager { get => this.m_levelManager; }
+        public Services.SmsService SmsService { get => this.m_smsService; }
+        public Services.TimerService TimerService { get => this.m_timerService; }
+        public Services.AudioService AudioService { get => this.m_audioService; }
 
+        public Player Player { get => FindFirstObjectByType<Player>(FindObjectsInactive.Include); } //Source: https://docs.unity3d.com/2022.3/Documentation/ScriptReference/Object.FindFirstObjectByType.html
 
         // Start is called before the first frame update
         void Start()
         {
             ///// Initialize State Machine /////
-            m_stateMachine = new GameStateMachine();
-            m_playingState = new States.StatePlaying(this);
-            m_gameOverState = new States.StateGameOver(this);
-            m_pauseState = new States.StatePause(this);
-            m_stateMachine.Init(m_pauseState);
+            this.m_stateMachine = new GameStateMachine();
+            this.m_playingState = new States.StatePlaying(this);
+            this.m_gameOverState = new States.StateGameOver(this);
+            this.m_pauseState = new States.StatePause(this);
+            this.m_stateMachine.Init(this.m_pauseState);
 
             ///// Initialize Level manager /////
-            m_levelManager = gameObject.GetComponent<LevelManager>();
-            m_levelManager.init();
-            m_levelManager.NextLevel();
-
+            this.m_levelManager = this.gameObject.GetComponent<LevelManager>();
+            this.m_levelManager.Init();
+            this.m_levelManager.GoToMain();//<(!) Go to Main-Menu Scene
+            ///// Initialize Services /////
+            this.m_smsService = this.gameObject.GetComponent<Services.SmsService>();
+            this.m_timerService = this.gameObject.GetComponent<Services.TimerService>();
+            this.m_audioService = this.gameObject.GetComponent<Services.AudioService>();
         }
 
         // Update is called once per frame
         void FixedUpdate()
         {
-            m_stateMachine.Handle();
+            this.m_stateMachine.Handle();
         }
 
         //////////////////////////////////////////////
@@ -58,16 +74,17 @@ namespace System.Game
         /// </summary>
         public void GameStart()
         {
-            if (m_autoStart)
+            this.Player.Data.ResetDefault();
+            if (this.m_autoStart)
             {
-                if (m_startLevel > 1)
-                    m_levelManager.GoToLevel(m_startLevel);
+                if (this.m_startLevel > 1)
+                    this.m_levelManager.GoToLevel(this.m_startLevel);
 
-                GamePlay();
+                this.GamePlay();
             }
             else
             {
-                GameOpening();
+                this.GameOpening();
             }
         }
 
@@ -76,9 +93,9 @@ namespace System.Game
         /// </summary>
         public void MoveNextLevel()
         {
-            if (!m_levelManager.NextLevel())
+            if (this.m_levelManager.FinishCurrentLevel() && !this.m_levelManager.NextLevel())
             {
-                GameOver(States.GameOverMode.GAME_OVER_WIN);//<(e) Si no hay más niveles el player gano el juego
+                this.GameOver(States.GameOverMode.GAME_OVER_WIN);//<(e) Si no hay más niveles el player gano el juego
             }
         }
 
@@ -91,7 +108,7 @@ namespace System.Game
         /// </summary>
         public void GamePause()
         {
-            m_stateMachine.Init(m_pauseState);
+            this.m_stateMachine.Init(this.m_pauseState);
         }
 
         /// <summary>
@@ -99,12 +116,12 @@ namespace System.Game
         /// </summary>
         public void GamePlay()
         {
-            if (m_levelManager.GetLevelScene().name == "Main")//<(i) When the opening is finished
+            if (this.m_levelManager != null && this.m_levelManager.GetLevelScene().name == "Main")//<(i) When the opening is finished
             {
-                MoveNextLevel();
+                this.MoveNextLevel();
             }
 
-            m_stateMachine.ChangeTo(m_playingState);
+            this.m_stateMachine.ChangeTo(this.m_playingState);
         }
 
         /// <summary>
@@ -113,13 +130,24 @@ namespace System.Game
         /// <param name="p_mode"></param>
         public void GameOver(States.GameOverMode p_mode = States.GameOverMode.GAME_OVER_LOSE)
         {
-            m_gameOverState.Mode = p_mode;
-            m_stateMachine.ChangeTo(m_gameOverState);
+            this.m_gameOverState.Mode = p_mode;
+            this.m_stateMachine.ChangeTo(this.m_gameOverState);
         }
 
+        /// <summary>
+        /// Load the game opening
+        /// </summary>
         public void GameOpening()
         {
             SceneManager.LoadScene("Opening", LoadSceneMode.Additive);
+        }
+
+        /// <summary>
+        /// Load the game ending
+        /// </summary>
+        public void GameEnding()
+        {
+            this.m_levelManager.ActiveEnding();
         }
     }
 } //namespace System.Game

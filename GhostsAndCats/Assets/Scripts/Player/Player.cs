@@ -1,8 +1,9 @@
-﻿using Managers;
+﻿#define GAME_DEBUG
+#undef GAME_DEBUG
+
+using Managers;
 using Movements;
-using Settings;
-using System;
-using System.ComponentModel;
+using System.Game;
 using UnityEngine;
 
 [RequireComponent(typeof(InputController), typeof(AnimeManager), typeof(AudioManager))]
@@ -17,26 +18,30 @@ public class Player : MonoBehaviour
     public event System.Action EVT_GOAL;
     public event System.Action EVT_COLLECT_TUNA;
     public event System.Action EVT_COLLECT_SOUL;
+    public event System.Action EVT_DEFEATED;
+    public event System.Action EVT_DAMAGED;
 
     ///// CONFIG INSPECTOR /////
     protected bool m_disabled = false;
-    protected bool m_damaged = false;
+    public bool m_damaged = false;
     protected int m_lifes = 0;
     protected Vector2 m_spawnPos = Vector2.zero;
-    public Vector2 SpawnPosition { get => m_spawnPos; set => m_spawnPos = value; }
+    public Vector2 SpawnPosition { get => this.m_spawnPos; set => this.m_spawnPos = value; }
 
     ///[SerializeField] protected EnemyGenericDamage m_enemy; //<(i) Observer Pattern <= Obsolete
     protected InputController m_inputController = null;
     protected AnimeManager m_animeManager = null;
     protected AudioManager m_audioManager = null;
-    public PlayerData Data { get => m_data; }
+    protected ExperienceManager m_expManager = null;
+    public PlayerData Data { get => this.m_data; }
+    public AudioManager Jukebox { get => this.m_audioManager; }
 
     /// <summary>
     /// Indicate if player is defeated. eq.-lifes equals 0.
     /// </summary>
     public bool IsDefeated()
     {
-        return m_data.Lifes == 0;
+        return this.m_data.Lifes == 0;
     }
 
     /// <summary>
@@ -44,24 +49,91 @@ public class Player : MonoBehaviour
     /// </summary>
     public void TranslateToSpawnPosition()
     {
-        this.gameObject.transform.position = new Vector3(SpawnPosition.x, SpawnPosition.y, transform.position.z);
-        Camera.main.GetComponent<FollowerCamera>().SetCameraPosition(SpawnPosition);
+        this.gameObject.GetComponent<BoxCollider2D>().enabled = true; //<(!) Because when player falls in abysm, it happens mortal-rebound
+        this.gameObject.transform.position = new Vector3(this.SpawnPosition.x, this.SpawnPosition.y, this.transform.position.z);
+        Camera.main.GetComponent<FollowerCamera>().SetCameraPosition(this.SpawnPosition);
     }
 
     // Start is called before the first frame update: Start is only ever called once for a given script.
     //Source: https://docs.unity3d.com/Manual/ExecutionOrder.html
     protected void Start()
     {
-        m_inputController = this.GetComponent<InputController>();
-        m_animeManager = this.GetComponent<AnimeManager>();
-        m_audioManager = this.GetComponent<AudioManager>();
+#if GAME_DEBUG
+        Debug.Log("PLAYER ON START");
+#endif
+        this.m_inputController = this.GetComponent<InputController>();
+        this.m_animeManager = this.GetComponent<AnimeManager>();
+        this.m_audioManager = this.GetComponent<AudioManager>();
+        this.m_expManager = this.GetComponent<ExperienceManager>();
+
+        this.RegisterOverTime();
+    }
+
+    protected void OnDestroy()
+    {
+        this.UnregisterOverTime();
+    }
+
+    protected void OnEnable()
+    {
+#if GAME_DEBUG
+        Debug.Log("ON ENABLE");
+#endif
+    }
+
+    private void OnDisable()
+    {
+#if GAME_DEBUG
+        Debug.Log("ON DISABLE");
+#endif
+
+    }
+
+    /// <summary>
+    /// It adds callback OnDamaged() method to over-time event
+    /// </summary>
+    public void RegisterOverTime()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.TimerService != null)
+        {
+            GameManager.Instance.TimerService.EVT_OVER_TIME += this.OnDamaged;
+        }
+    }
+
+    /// <summary>
+    /// It removes callback OnDamaged() method to over-time event
+    /// </summary>
+    public void UnregisterOverTime()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.TimerService != null)
+        {
+            GameManager.Instance.TimerService.EVT_OVER_TIME -= this.OnDamaged;
+        }
+    }
+
+    /// <summary>
+    /// It adds callback for boss knock out event
+    /// </summary>
+    public void RegisterBossEvents(Boss p_boss)
+    {
+        Debug.Assert(p_boss != null, $"Given Boss is null to register!");
+        p_boss.EVT_KNOCK_OUT += this.m_expManager.OnKnockOutRecount;
+    }
+
+    /// <summary>
+    /// It removes callback for boss knock out event
+    /// </summary>
+    public void UnregisterBossEvents(Boss p_boss)
+    {
+        Debug.Assert(p_boss != null, $"Given Boss is null to unregister!");
+        p_boss.EVT_KNOCK_OUT -= this.m_expManager.OnKnockOutRecount;
     }
 
     // Update is called once per frame [variable intervale]
     protected void Update()
     {
-        m_damaged = m_animeManager.IsPlaying("Damage");
-        EnableActions();
+        this.m_damaged = this.m_animeManager.IsPlaying("Damage");
+        this.Recover();
     }
 
     //Sent when another object enters a trigger collider attached to this object (2D physics only).
@@ -75,10 +147,10 @@ public class Player : MonoBehaviour
             switch (p_collider.tag)
             {
                 case "tAbyss":
-                    OnDamaged();
+                    this.OnDamaged();
                     break;
                 case "tGoal":
-                    OnGoal();
+                    this.OnGoal();
                     break;
                 case "tItemTuna":
                     if (p_collider.isActiveAndEnabled)
@@ -99,20 +171,20 @@ public class Player : MonoBehaviour
 #if GAME_DEBUG
         Debug.Log($"<DEBUG> {this.name} > Touched a game-object: Name->{p_collision.collider.name}. Tag->{p_collision.collider.tag}");
 #endif
-        if (p_collision.collider.CompareTag("tEnemy"))
+        if (p_collision.collider.CompareTag("tEnemy") && !this.m_damaged)
         {
             ContactPoint2D l_contactPoint = p_collision.GetContact(0);
 
             if (l_contactPoint.normal == Vector2.up)
-                HandleStompCollision(l_contactPoint);
+                this.HandleStompCollision(l_contactPoint);
             else
-                HandleEnemyDamageCollision(l_contactPoint);
+                this.HandleEnemyDamageCollision(l_contactPoint);
         }
 
-        if (p_collision.collider.CompareTag("tBoss"))
+        if (p_collision.collider.CompareTag("tBoss") && !this.m_damaged)
         {
             ContactPoint2D l_contactPoint = p_collision.GetContact(0);
-            HandleEnemyDamageCollision(l_contactPoint);
+            this.HandleEnemyDamageCollision(l_contactPoint);
         }
     }
 
@@ -137,7 +209,7 @@ public class Player : MonoBehaviour
         if (p_contactPoint.normal == Vector2.up)
             return false;
 
-        OnDamaged();
+        this.OnDamaged();
 
         return true;
     }
@@ -147,41 +219,56 @@ public class Player : MonoBehaviour
     /// </summary>
     protected void OnDamaged()
     {
-        m_data.RemoveLifes();
+        this.m_data.RemoveLifes();
 
-        if (IsDefeated())
+        if (this.IsDefeated())
         {
-            m_audioManager.OnDefeatSfx();
-            m_animeManager.HandleDefeat();
-            m_damaged = true;
+            this.m_audioManager.OnDefeatSfx();
+            this.m_animeManager.HandleDefeat();
+            this.m_damaged = true;
+            this.DisableActions();
         }
         else
         {
-            m_audioManager.OnDamageSfx();
-            m_animeManager.HandleDamage();
-            m_damaged = true;
+            this.m_audioManager.OnDamageSfx();
+            this.m_animeManager.HandleDamage();
+            this.m_damaged = true;
             //transform.position = m_data.SpawnPosition;
-            TranslateToSpawnPosition();
+            //TranslateToSpawnPosition
         }
     }
 
     /// <summary>
-    /// Enable Player for actions
+    /// Get back Player from damaged status
     /// </summary>
-    protected void EnableActions()
+    protected void Recover()
     {
-        if (!m_damaged && !this.IsDefeated())
+        if (!this.m_damaged && !this.IsDefeated())
         {
-            m_inputController.enabled = true;
-            m_animeManager.HandleInput();
+            this.m_inputController.enabled = true;
+            this.m_animeManager.HandleInput();
         }
     }
 
+    /// <summary>
+    /// Disable player movements
+    /// </summary>
     public void DisableActions()
     {
-        m_inputController.GetComponent<JumpManager>().enabled = false;
-        m_inputController.GetComponent<WalkManager>().enabled = false;
-        m_animeManager.enabled = false;
+        this.m_inputController.GetComponent<JumpManager>().enabled = false;
+        this.m_inputController.GetComponent<WalkManager>().enabled = false;
+        this.m_animeManager.enabled = false;
+    }
+
+    /// <summary>
+    /// Enable player movements
+    /// </summary>
+    public void EnableActions()
+    {
+        this.m_inputController.GetComponent<JumpManager>().enabled = true;
+        this.m_inputController.GetComponent<WalkManager>().enabled = true;
+        this.m_animeManager.enabled = true;
+        this.m_animeManager.Reset();
     }
 
     /// <summary>
@@ -192,12 +279,33 @@ public class Player : MonoBehaviour
         LevelData l_levelData = GameObject.FindFirstObjectByType<Level>().Data;
 
         //if (m_data.Souls >= l_levelData.m_requiredSoulsQty)
-        if (gameObject.GetComponent<ExperienceManager>().IsReadyGoal())
+        if (this.gameObject.GetComponent<ExperienceManager>().IsReadyGoal())
         {
-            EVT_GOAL?.Invoke();
+            EVT_GOAL?.Invoke(); //<(!) Go-To Playing State
         }
     }
 
+    /// <summary>
+    /// Callback when player is defeated
+    /// Note: This function is called by Defeat Player Animation event!
+    /// Animation Event Config => Function: Player/Methoids/TriggerEvtDefeated()
+    /// </summary>
+    public void TriggerEvtDefeated()
+    {
+        EVT_DEFEATED?.Invoke();
+    }
+
+    /// <summary>
+    /// Callback when player is damaged and lost a life to reset level'status
+    /// Note: This function is called by Damage Player Animation event!
+    /// Animation Event Config => Function: Player/Methoids/TriggerEvtDamaged()
+    /// </summary>
+    public void TriggerEvtDamaged()
+    {
+        GameManager.Instance.LevelManager.ReloadLevel();
+        this.m_expManager.Reset();
+        EVT_DAMAGED?.Invoke();
+    }
 }
 
 ////////////////////////////////////////////////////////////

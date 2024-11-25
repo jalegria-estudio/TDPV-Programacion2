@@ -10,6 +10,7 @@
  */
 
 using UnityEngine;
+using UnityEngine.UI;
 
 //Mi caja de herramientas
 namespace Toolbox //Incluir a la caja de herramientas las funciones que se necesiten llevar
@@ -145,6 +146,32 @@ namespace Toolbox //Incluir a la caja de herramientas las funciones que se neces
         {
             AnimatorStateInfo l_currentState = p_animator.GetCurrentAnimatorStateInfo(0);
             return l_currentState.normalizedTime;
+        }
+    }
+
+    public class CanvasTools
+    {
+        /// <summary>
+        /// Generic text replacer
+        /// </summary>
+        /// <param name="p_nameObj">Canvas GameObject Name</param>
+        /// <param name="p_text">New Text</param>
+        /// <returns></returns>
+        public static bool ReplaceText(string p_nameObj, string p_text)
+        {
+            GameObject l_canvas = GameObject.Find(p_nameObj);
+
+            if (l_canvas == null)
+                return false;
+
+            l_canvas.TryGetComponent<Text>(out Text l_text);
+            if (l_text != null)
+            {
+                l_text.text = p_text;
+                return true;
+            }
+
+            return false;
         }
     }
 }
