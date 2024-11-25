@@ -15,7 +15,7 @@ MonoBehaviour:
   m_name: Magic Passage
   m_level: 1
   m_sublevel: 1
-  m_time: 101
+  m_time: 151
   m_requiredSoulsQty: 0
   m_startPoint: {x: 0, y: -7}
   m_goalPoint: {x: 9.55, y: 0.5}

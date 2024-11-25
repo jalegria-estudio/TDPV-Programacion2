@@ -173,5 +173,19 @@ namespace Toolbox //Incluir a la caja de herramientas las funciones que se neces
 
             return false;
         }
+
+        /// <summary>
+        /// Generic text capitalizer
+        /// </summary>
+        /// <param name="p_text">Text to capitalize</param>
+        /// <returns>string</returns>
+        public static string CapitalizeText(string p_text)
+        {
+            if (p_text == "" || string.IsNullOrEmpty(p_text))
+                return p_text;
+
+            return char.ToUpper(p_text[0]) + p_text.Substring(1);
+        }
+
     }
 }

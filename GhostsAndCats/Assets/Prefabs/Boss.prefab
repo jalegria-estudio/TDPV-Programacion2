@@ -175,6 +175,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_lifes: 5
+  m_bossScore: 1500
+  m_GhostyScore: 100
   m_sfxScare: {fileID: 8300000, guid: c644758ac269d344c9ae689731bb4e6e, type: 3}
   m_sfxKnockOut: {fileID: 8300000, guid: 48794f579eb4eea4ab9fabfd91f7b487, type: 3}
   m_sfxAngry: {fileID: 8300000, guid: 21c40252c96fc3e4aa9e5d1f896c4419, type: 3}

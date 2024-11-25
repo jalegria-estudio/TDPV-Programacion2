@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Game;
 using UnityEngine;
 
 /// <summary>
@@ -19,7 +20,7 @@ public class Boss : MonoBehaviour
     [Range(0, 10)]
     [SerializeField] protected int m_lifes = 5;
     [SerializeField] protected int m_bossScore = 1000;
-    [SerializeField] protected int m_GhostyScore = 100;
+    [SerializeField] protected int m_ghostyScore = 100;
     [Header("Sounds")]
     [SerializeField] AudioClip m_sfxScare = null;
     [SerializeField] AudioClip m_sfxKnockOut = null;
@@ -145,6 +146,7 @@ public class Boss : MonoBehaviour
             l_animator.SetTrigger("pKnock");
             this.m_jukebox.PlayOneShot(this.m_sfxSad);
             this.m_lifes--;
+            GameManager.Instance.Player.Data.Score += this.m_ghostyScore;
             this.EVT_KNOCK?.Invoke();
             return;
         }

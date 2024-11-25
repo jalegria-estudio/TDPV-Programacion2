@@ -1,3 +1,6 @@
+#define GAME_DEBUG
+#undef GAME_DEBUG
+
 using System.Collections;
 using System.Game;
 using UnityEngine;
@@ -91,7 +94,7 @@ namespace Managers
         }
 
         /// <summary>
-        /// Trade tunas by power-up lifes in runtime
+        /// Trade tunas by power-up lifes in runtime -OBSOLETO
         /// </summary>
         public void ExchangeTunasOnRuntime()
         {
@@ -117,7 +120,7 @@ namespace Managers
         }
 
         /// <summary>
-        /// Trade tunas for power-up
+        /// Trade tunas for power-up -OBSOLETO
         /// </summary>
         /// <param name="p_tunasQty"></param>
         public void TradeTunas(int p_tunasQty)
@@ -130,6 +133,9 @@ namespace Managers
             }
         }
 
+        /// <summary>
+        /// Update goal status
+        /// </summary>
         protected void GoalStatusUpdate()
         {
             if (this.IsReadyGoal())
@@ -179,6 +185,7 @@ namespace Managers
         protected void OnCollectTuna()
         {
             this.m_playerData.AddTunas();
+            this.m_playerData.Score += this.m_playerData.TunaScore;
         }
 
         /// <summary>
@@ -187,7 +194,7 @@ namespace Managers
         protected void OnCollectSoul()
         {
             this.m_playerData.AddSouls();
-
+            this.m_playerData.Score += this.m_playerData.SoulScore;
         }
 
         /// <summary>
@@ -227,9 +234,20 @@ namespace Managers
                 EVT_SCORE_BOSS?.Invoke(); //<(!) This invoke to audio observer for play sfx-add-score
                 while (l_bossScoring > 0)
                 {
-                    this.m_playerData.Score++;
-                    l_bossScoring--;
-                    yield return new WaitForSeconds(this.m_playerData.SfxScoreBoss.length / this.m_playerData.KnockOutScore);
+                    this.m_playerData.Score += l_bossScoring;
+                    l_bossScoring = 0;
+
+                    yield return new WaitForSeconds(this.m_playerData.SfxScoreBoss.length);//<(i) Alternative recount but doesn't well on WebGL platform: this.m_playerData.SfxScoreBoss.length / this.m_playerData.KnockOutScore
+                }
+
+                /// LIFES SOULS
+                this.m_player.Jukebox.Stop();
+                while (this.m_playerData.Lifes > 0)
+                {
+                    EVT_1UP?.Invoke();//<(!) This invoke to audio observer for play sfx-add-score
+                    this.m_playerData.Score += this.m_playerData.LifeScore;
+                    this.m_playerData.RemoveLifes(1);
+                    yield return new WaitForSeconds(this.m_playerData.Sfx1up.length);
                 }
             }
 
@@ -255,20 +273,8 @@ namespace Managers
 
                 this.m_playerData.RemoveTunas(1);
 
-                //yield return new WaitForFixedUpdate();
                 yield return new WaitForSeconds(0.03f);
             }
-
-            ///OBSOLETO ??????
-            //this.m_player.Jukebox.Stop();
-            //while (this.m_playerData.Tunas > 0)
-            //{
-            //    EVT_SCORE?.Invoke();//<(!) This invoke to audio observer for play sfx-add-score
-            //    this.m_playerData.Score += this.m_playerData.TunaScore;
-            //    this.m_playerData.RemoveTunas(1);
-            //    //yield return new WaitForFixedUpdate();
-            //    yield return new WaitForSeconds(0.03f);
-            //}
 
             /// COUNT REMAINING TIME
             this.m_player.Jukebox.Stop();
@@ -289,16 +295,19 @@ namespace Managers
 
             GameManager.Instance.SmsService.Cease();
             GameManager.Instance.MoveNextLevel();
-
-            //this.m_player.DisableActions();//OBSOLETO ?????
         }
 
+        /// <summary>
+        /// Count point on knock-out boss
+        /// </summary>
         public void OnKnockOutRecount()
         {
-            //GameManager.Instance.LevelManager.GetLevel().StopGameplay();
             this.StartCoroutine(this.RecountItems(true));
         }
 
+        /// <summary>
+        /// Reset status
+        /// </summary>
         public void Reset()
         {
             this.m_playerData.RemoveTunas(this.m_playerData.Tunas);
@@ -306,6 +315,9 @@ namespace Managers
             this.m_LifesExchanged = 0;
         }
 
+        /// <summary>
+        /// Update hi-score data
+        /// </summary>
         public void UpdateHiScore()
         {
             if (this.m_playerData.Score > this.m_playerData.HiScore)
@@ -316,8 +328,7 @@ namespace Managers
             }
         }
 
-
-
+#if GAME_DEBUG
         /// <summary>
         /// Simple Render Status Player
         /// </summary>
@@ -329,5 +340,6 @@ namespace Managers
             GUI.Label(new Rect(100, 140, 100, 30), $"Lifes: {this.m_playerData.Lifes}");
             GUI.Label(new Rect(100, 160, 200, 30), "Press Key <H> for controls.");
         }
+#endif
     }
 } //Namespace Managers

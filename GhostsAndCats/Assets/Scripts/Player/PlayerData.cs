@@ -16,6 +16,9 @@ public class PlayerData : ScriptableObject
     [Tooltip("Default lifes quantity")]
     [Range(0, 10)]
     [SerializeField] protected int m_defaultLifes = 0;
+    [Tooltip("Lifes score")]
+    [Range(0, 1000)]
+    [SerializeField] protected int m_lifeScore = 500;
 
     public int Lifes { get => this.m_lifes; }
 
@@ -30,6 +33,7 @@ public class PlayerData : ScriptableObject
             this.m_lifes -= p_qty;
     }
 
+    public int LifeScore { get => this.m_lifeScore; }
 
     /////////////
     // TUNAS

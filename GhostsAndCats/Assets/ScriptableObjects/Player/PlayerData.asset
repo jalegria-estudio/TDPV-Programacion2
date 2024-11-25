@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_lifes: 7
   m_defaultLifes: 7
+  m_lifeScore: 500
   m_tunas: 0
   m_defaultTunas: 0
-  m_tunaScore: 0
+  m_tunaScore: 10
   m_souls: 0
   m_defaultSouls: 0
-  m_soulScore: 0
+  m_soulScore: 100
   m_score: 0
   m_hiscore: 0
   m_timeScore: 1

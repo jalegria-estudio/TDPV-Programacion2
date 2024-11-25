@@ -15,7 +15,7 @@ MonoBehaviour:
   m_name: Spooky Graveyard
   m_level: 1
   m_sublevel: 2
-  m_time: 300
+  m_time: 400
   m_requiredSoulsQty: 5
   m_startPoint: {x: -2.5, y: -5.9}
   m_goalPoint: {x: 171.5, y: -7.5}

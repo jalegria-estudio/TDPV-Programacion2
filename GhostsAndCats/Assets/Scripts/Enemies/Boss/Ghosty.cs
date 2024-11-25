@@ -90,7 +90,6 @@ public class Ghosty : MonoBehaviour
     /// </summary>
     public void OnDefeat()
     {
-        Debug.Log("COLLISION ON DEFEAT!");
         this.AnimeDefeat();
         EVT_DEFEAT?.Invoke();
     }

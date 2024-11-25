@@ -15,7 +15,7 @@ MonoBehaviour:
   m_name: Haunted House
   m_level: 1
   m_sublevel: 3
-  m_time: 300
+  m_time: 400
   m_requiredSoulsQty: 0
   m_startPoint: {x: 0, y: -7}
   m_goalPoint: {x: 10, y: 10}
