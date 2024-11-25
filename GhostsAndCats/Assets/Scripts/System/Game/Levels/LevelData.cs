@@ -17,6 +17,14 @@ public class LevelData : ScriptableObject
     internal int m_sublevel = 0;
 
     ///////////////////////////////
+    /// LEVEL TIME
+    /////////////////////////////
+    [SerializeField]
+    [Tooltip("Finish the level before the time")]
+    [Range(0, 999)]
+    internal int m_time = 300;
+    public int Time { get => m_time; set => m_time = value; }
+    ///////////////////////////////
     /// LEVEL SOUL COST
     /////////////////////////////
     [SerializeField]
@@ -60,6 +68,56 @@ public class LevelData : ScriptableObject
         get => m_defaultCameraPosition;
         set => m_defaultCameraPosition = value;
     }
+
+    /////////////////////
+    /// STAGE CLEAR
+    ////////////////////
+    [SerializeField]
+    [Tooltip("Show Stage Clear Report")]
+    protected bool m_showReport = false;
+    public bool ShowStageClear
+    {
+        get => m_showReport;
+        set => m_showReport = value;
+    }
+
+    [SerializeField]
+    [Tooltip("Audio Clip for gameplay")]
+    protected AudioClip m_audioClipGameplay = null;
+    public AudioClip AudioClipGameplay
+    {
+        get => m_audioClipGameplay;
+        set => m_audioClipGameplay = value;
+    }
+    /////////////////////
+    /// STAGE: ROUND
+    ////////////////////
+    [Header("ROUND STAGE CONFIGURATION")]
+
+    [SerializeField]
+    [Tooltip("Show Round Stage Report")]
+    protected bool m_showStageRound = false;
+    public bool ShowStageRound
+    {
+        get => m_showStageRound;
+        set => m_showStageRound = value;
+    }
+
+    [SerializeField]
+    [Tooltip("Audio Clip Round Stage Report")]
+    protected AudioClip m_audioClipStageRound = null;
+    public AudioClip AudioClipStageRound
+    {
+        get => m_audioClipStageRound;
+        set => m_audioClipStageRound = value;
+    }
+
+    [Tooltip("Waiting time in seconds Round Stage")]
+    [Range(1.0f, 10.0f)]
+    [SerializeField]
+    protected float m_waitTime = 3.5f;
+    public float WaitTime { get => m_waitTime; set => m_waitTime = value; }
+
 }
 
 ///////////////////////////////////////

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Managers
@@ -18,30 +17,37 @@ namespace Managers
 
         protected void Awake()
         {
-            m_audioSourcer = this.gameObject.GetComponent<AudioSource>();
-            m_rigidBody = this.gameObject.GetComponent<Rigidbody2D>();
-            m_inputController = this.gameObject.GetComponent<InputController>();
-            m_data = this.gameObject.GetComponent<Player>().Data;
+            this.m_audioSourcer = this.gameObject.GetComponent<AudioSource>();
+            this.m_rigidBody = this.gameObject.GetComponent<Rigidbody2D>();
+            this.m_inputController = this.gameObject.GetComponent<InputController>();
+            this.m_data = this.gameObject.GetComponent<Player>().Data;
 
-            configEvents();
+            this.configEvents();
         }
 
         protected void OnDestroy()
         {
-            JumpManager l_jumper = m_inputController.GetComponent<JumpManager>();
+            JumpManager l_jumper = this.m_inputController.GetComponent<JumpManager>();
 
             if (l_jumper != null)
             {
-                l_jumper.EVT_JUMP -= OnJumpSfx;
+                l_jumper.EVT_JUMP -= this.OnJumpSfx;
             }
 
             ///Stomp Event///
-            if (this.gameObject.GetComponent<Player>())
-                this.gameObject.GetComponent<Player>().EVT_STOMP -= OnStompSfx;
+            if (this.gameObject.GetComponent<Player>() != null)
+                this.gameObject.GetComponent<Player>().EVT_STOMP -= this.OnStompSfx;
 
-            /// 1-UP ///
-            if (this.gameObject.GetComponent<ExperienceManager>())
-                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP -= On1UpSfx;
+            /// 1-UP, SCORE POINT, TIME SCORE POINT///
+            if (this.gameObject.GetComponent<ExperienceManager>() != null)
+            {
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP -= this.On1UpSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_SCORE -= this.OnScoreSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_SCORE_TIME -= this.OnScoreTimeSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_SCORE_BOSS -= this.OnScoreBossSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_HISCORE -= this.OnHiScoreSfx;
+            }
+
 
         }
 
@@ -51,20 +57,25 @@ namespace Managers
         protected void configEvents()
         {
             ///Jump Event///
-            JumpManager l_jumper = m_inputController.GetComponent<JumpManager>();
+            JumpManager l_jumper = this.m_inputController.GetComponent<JumpManager>();
             if (l_jumper != null)
             {
-                l_jumper.EVT_JUMP += OnJumpSfx;
+                l_jumper.EVT_JUMP += this.OnJumpSfx;
             }
 
             ///Stomp Event///
             if (this.gameObject.GetComponent<Player>() != null)
-                this.gameObject.GetComponent<Player>().EVT_STOMP += OnStompSfx;
+                this.gameObject.GetComponent<Player>().EVT_STOMP += this.OnStompSfx;
 
             /// 1-UP ///
             if (this.gameObject.GetComponent<ExperienceManager>() != null)
-                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP += On1UpSfx;
-
+            {
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP += this.On1UpSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_SCORE += this.OnScoreSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_SCORE_TIME += this.OnScoreTimeSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_SCORE_BOSS += this.OnScoreBossSfx;
+                this.gameObject.GetComponent<ExperienceManager>().EVT_HISCORE += this.OnHiScoreSfx;
+            }
         }
 
         /// <summary>
@@ -74,11 +85,33 @@ namespace Managers
         /// <returns>Return false if audio source is playing other sound</returns>
         public bool Play(AudioClip p_audio)
         {
-            if (m_audioSourcer.isPlaying)
+            if (this.m_audioSourcer.isPlaying)
                 return false;
 
-            m_audioSourcer.PlayOneShot(p_audio);
+            this.m_audioSourcer.PlayOneShot(p_audio);
             return true;
+        }
+
+        /// <summary>
+        /// Stop a audio clip
+        /// </summary>
+        /// <returns>Return false if audio source isn't playing a sound</returns>
+        public bool Stop()
+        {
+            if (!this.m_audioSourcer.isPlaying)
+                return false;
+
+            this.m_audioSourcer.Stop();
+            return true;
+        }
+
+        /// <summary>
+        /// Wrapper - Indicate if it's playing a audio clip 
+        /// </summary>
+        /// <returns>Return false if audio source isn't playing a sound</returns>
+        public bool IsPlayingClip()
+        {
+            return this.m_audioSourcer.isPlaying;
         }
 
         ///////////////////////////////////
@@ -87,27 +120,50 @@ namespace Managers
 
         public void OnJumpSfx()
         {
-            this.Play(m_data.SfxJump);
+            this.Play(this.m_data.SfxJump);
         }
 
         public void OnStompSfx()
         {
-            this.Play(m_data.SfxStomp);
+            this.Play(this.m_data.SfxStomp);
         }
 
         public void OnDamageSfx()
         {
-            this.Play(m_data.SfxDamage);
+            this.Play(this.m_data.SfxDamage);
         }
 
         public void OnDefeatSfx()
         {
-            this.Play(m_data.SfxDefeat);
+            this.Play(this.m_data.SfxDefeat);
         }
 
-        private void On1UpSfx()
+        public void On1UpSfx()
         {
-            this.Play(m_data.Sfx1up);
+            this.Play(this.m_data.Sfx1up);
+        }
+
+        public void OnScoreSfx()
+        {
+            //m_audioSourcer.Stop();
+            this.Play(this.m_data.SfxScore);
+        }
+
+        public void OnScoreTimeSfx()
+        {
+            //m_audioSourcer.Stop();
+            this.Play(this.m_data.SfxScoreTime);
+        }
+        public void OnScoreBossSfx()
+        {
+            //m_audioSourcer.Stop();
+            this.Play(this.m_data.SfxScoreBoss);
+        }
+
+        public void OnHiScoreSfx()
+        {
+            //m_audioSourcer.Stop();
+            this.Play(this.m_data.SfxHiScore);
         }
     }
 } //namespace Managers

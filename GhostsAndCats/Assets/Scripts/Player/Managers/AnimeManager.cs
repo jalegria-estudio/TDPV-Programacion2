@@ -26,17 +26,17 @@ namespace Managers
 
         protected void OnDestroy()
         {
-            unsubscribesToEvents();
+            this.unsubscribesToEvents();
         }
 
         // Start is called before the first frame update
         protected void Start()
         {
-            m_animator = this.GetComponent<Animator>();
-            m_rigidBody = this.GetComponent<Rigidbody2D>();
-            m_spriteRenderer = this.GetComponent<SpriteRenderer>();
+            this.m_animator = this.GetComponent<Animator>();
+            this.m_rigidBody = this.GetComponent<Rigidbody2D>();
+            this.m_spriteRenderer = this.GetComponent<SpriteRenderer>();
 
-            subscribesToEvents();
+            this.subscribesToEvents();
         }
 
         protected void Update()
@@ -45,8 +45,8 @@ namespace Managers
             // Returns the value of the virtual axis identified by axisName with no smoothing filtering applied.
             // Since input is not smoothed, keyboard input will always be either -1, 0 or 1.
             // Source: https://docs.unity3d.com/ScriptReference/Input.GetAxisRaw.html
-            m_inputH = Input.GetAxisRaw("Horizontal");
-            m_inputV = Input.GetAxisRaw("Vertical");
+            this.m_inputH = Input.GetAxisRaw("Horizontal");
+            this.m_inputV = Input.GetAxisRaw("Vertical");
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Managers
         /// <returns>boolean</returns>
         public bool IsPlaying(string p_animeName)
         {
-            AnimatorStateInfo l_currentState = m_animator.GetCurrentAnimatorStateInfo(Config.ANIMATOR_BASE_LAYER);
+            AnimatorStateInfo l_currentState = this.m_animator.GetCurrentAnimatorStateInfo(Config.ANIMATOR_BASE_LAYER);
             bool l_state = l_currentState.IsName(p_animeName);
             return l_state;
         }
@@ -66,10 +66,10 @@ namespace Managers
         /// </summary>
         protected void resetParameters()
         {
-            m_animator.SetInteger("pInputV", 0);
-            m_animator.SetInteger("pInputH", 0);
-            m_animator.SetInteger("pVelocityV", 0);
-            m_animator.SetBool("pDucked", false);
+            this.m_animator.SetInteger("pInputV", 0);
+            this.m_animator.SetInteger("pInputH", 0);
+            this.m_animator.SetInteger("pVelocityV", 0);
+            this.m_animator.SetBool("pDucked", false);
         }
 
         ///////////////////////////////////
@@ -77,66 +77,74 @@ namespace Managers
         ///////////////////////////////////
         protected void subscribesToEvents()
         {
-            if (gameObject.GetComponent<WalkManager>() != null)
-                gameObject.GetComponent<WalkManager>().EVT_DUCK += HandleDuck;
+            if (this.gameObject.GetComponent<WalkManager>() != null)
+                this.gameObject.GetComponent<WalkManager>().EVT_DUCK += this.HandleDuck;
 
-            if (gameObject.GetComponent<ExperienceManager>() != null)
-                gameObject.GetComponent<ExperienceManager>().EVT_1UP += Handle1Up;
+            if (this.gameObject.GetComponent<ExperienceManager>() != null)
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP += this.Handle1Up;
         }
 
         protected void unsubscribesToEvents()
         {
-            if (gameObject.GetComponent<WalkManager>() != null)
-                gameObject.GetComponent<WalkManager>().EVT_DUCK -= HandleDuck;
+            if (this.gameObject.GetComponent<WalkManager>() != null)
+                this.gameObject.GetComponent<WalkManager>().EVT_DUCK -= this.HandleDuck;
 
-            if (gameObject.GetComponent<ExperienceManager>() != null)
-                gameObject.GetComponent<ExperienceManager>().EVT_1UP -= Handle1Up;
+            if (this.gameObject.GetComponent<ExperienceManager>() != null)
+                this.gameObject.GetComponent<ExperienceManager>().EVT_1UP -= this.Handle1Up;
         }
 
         ///////////////////////////////////
         /// ACTIONS HANDLER
         ///////////////////////////////////
+        public void Reset()
+        {
+            this.resetParameters();
+            this.m_animator.Play("Idle");
+        }
+
         public void HandleInput()
         {
             int l_anime = 0;
 
-            if (m_inputH != 0)
-                l_anime = (m_inputH > 0) ? 1 : -1;
+            if (this.m_inputH != 0)
+                l_anime = (this.m_inputH > 0) ? 1 : -1;
 
-            m_animator.SetInteger("pInputH", l_anime);
+            this.m_animator.SetInteger("pInputH", l_anime);
 
             if (l_anime < 0)
-                m_spriteRenderer.flipX = true;
+                this.m_spriteRenderer.flipX = true;
             else if (l_anime > 0)
-                m_spriteRenderer.flipX = false;
+                this.m_spriteRenderer.flipX = false;
 
-            l_anime = (int)m_inputV;
-            m_animator.SetInteger("pInputV", l_anime);
+            l_anime = (int)this.m_inputV;
+            this.m_animator.SetInteger("pInputV", l_anime);
 
-            int l_velocity = (int)m_rigidBody.velocity.normalized.y;
-            m_animator.SetInteger("pVelocityV", (int)m_rigidBody.velocity.normalized.y);
+            int l_velocity = (int)this.m_rigidBody.velocity.normalized.y;
+            this.m_animator.SetInteger("pVelocityV", (int)this.m_rigidBody.velocity.normalized.y);
         }
 
         public void HandleDamage()
         {
-            resetParameters();
-            m_animator.SetTrigger("pDamaged");
+            this.resetParameters();
+            this.m_animator.SetTrigger("pDamaged");
+            Movements.Moves.Plop(this.m_rigidBody, Config.PLAYER_JUMP_IMPULSE / 2.0f);
+            this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         }
 
         public void HandleDefeat()
         {
-            resetParameters();
-            m_animator.SetTrigger("pDefeated");
+            this.resetParameters();
+            this.m_animator.SetTrigger("pDefeated");
         }
 
         public void HandleDuck(bool p_ducked)
         {
-            m_animator.SetBool("pDucked", p_ducked);
+            this.m_animator.SetBool("pDucked", p_ducked);
         }
 
         public void Handle1Up()
         {
-            m_animator.SetTrigger("p1up");
+            this.m_animator.SetTrigger("p1up");
         }
     }
 }//namespace Managers

@@ -10,6 +10,7 @@
  */
 
 using UnityEngine;
+using UnityEngine.UI;
 
 //Mi caja de herramientas
 namespace Toolbox //Incluir a la caja de herramientas las funciones que se necesiten llevar
@@ -146,5 +147,45 @@ namespace Toolbox //Incluir a la caja de herramientas las funciones que se neces
             AnimatorStateInfo l_currentState = p_animator.GetCurrentAnimatorStateInfo(0);
             return l_currentState.normalizedTime;
         }
+    }
+
+    public class CanvasTools
+    {
+        /// <summary>
+        /// Generic text replacer
+        /// </summary>
+        /// <param name="p_nameObj">Canvas GameObject Name</param>
+        /// <param name="p_text">New Text</param>
+        /// <returns></returns>
+        public static bool ReplaceText(string p_nameObj, string p_text)
+        {
+            GameObject l_canvas = GameObject.Find(p_nameObj);
+
+            if (l_canvas == null)
+                return false;
+
+            l_canvas.TryGetComponent<Text>(out Text l_text);
+            if (l_text != null)
+            {
+                l_text.text = p_text;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Generic text capitalizer
+        /// </summary>
+        /// <param name="p_text">Text to capitalize</param>
+        /// <returns>string</returns>
+        public static string CapitalizeText(string p_text)
+        {
+            if (p_text == "" || string.IsNullOrEmpty(p_text))
+                return p_text;
+
+            return char.ToUpper(p_text[0]) + p_text.Substring(1);
+        }
+
     }
 }

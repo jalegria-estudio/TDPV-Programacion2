@@ -14,7 +14,9 @@ namespace Movements
         /// <param name="p_horizontalInput"></param>
         public static void Run(Rigidbody2D p_rigidBody, float p_speed, float p_horizontalInput)
         {
-            p_rigidBody.AddForce(new Vector2(p_speed * p_horizontalInput, .0f), ForceMode2D.Force); //<(!) Physics enviroment
+            //p_rigidBody.AddForce(new Vector2(p_speed * p_horizontalInput, .0f), ForceMode2D.Force); //<(!) Physics enviroment
+            float l_step = p_speed * Time.deltaTime * p_horizontalInput;//<(!) the move is more precise with horizontal input var
+            p_rigidBody.transform.Translate(l_step, .0f, .0f); //<(!) Precise movement
         }
     }
 }

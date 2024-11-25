@@ -20,8 +20,18 @@ namespace System.Game
         /// </summary>
         public int CurrentLevelID
         {
-            get => m_currentLevel;
-            set => m_currentLevel = value; //<(!) Danger code
+            get => this.m_currentLevel;
+            protected set => this.m_currentLevel = value;
+        }
+
+        /// <summary>
+        /// Indicate if current Level is reloaded
+        /// </summary>
+        protected bool m_reloaded = false;
+        public bool Reloaded
+        {
+            get => this.m_reloaded;
+            protected set => this.m_reloaded = value;
         }
 
         /// <summary>
@@ -30,8 +40,20 @@ namespace System.Game
         /// <returns></returns>
         public Scene GetLevelScene()
         {
-            return SceneManager.GetSceneByName(m_levels[m_currentLevel]);
+            return SceneManager.GetSceneByName(this.m_levels[this.m_currentLevel]);
         }
+
+        /// <summary>
+        /// Get current level component
+        /// </summary>
+        /// <returns></returns>
+        public Level GetLevel()
+        {
+            Level l_level = null;
+            GameObject.FindWithTag("tLevel")?.TryGetComponent<Level>(out l_level); //<(!) I can use GetLevelData mode
+            return (l_level != null) ? l_level : null;
+        }
+
 
         /// <summary>
         /// Get current level data 
@@ -41,22 +63,48 @@ namespace System.Game
         {
             Level l_level = GameObject.FindFirstObjectByType<Level>();
 
-            return l_level.Data;
+            return (l_level != null) ? l_level.Data : null;
         }
 
         /// <summary>
         /// Initialize the level manager
         /// </summary>
-        public void init()
+        public void Init()
         {
-            m_levels.Add("Game");//<(e) Game scene =>id0
-            m_levels.Add("Main");
-            m_levels.Add("Level1-1");
-            m_levels.Add("Level1-2");
-            m_levels.Add("Level1-3");
+            this.m_levels.Add("Game");//<(e) Game scene =>id0
+            this.m_levels.Add("Main");
+            this.m_levels.Add("Level1-1");
+            this.m_levels.Add("Level1-2");
+            this.m_levels.Add("Level1-3");
 
             /// Suscription to SceneManager Events => https://docs.unity3d.com/2022.3/Documentation/ScriptReference/SceneManagement.SceneManager.html
-            SceneManager.sceneLoaded += OnLoadedLevel;
+            SceneManager.sceneLoaded += this.OnLoadedLevel;
+        }
+
+        /// <summary>
+        /// Load level configuration to game scene when this loaded
+        /// Source: https://docs.unity3d.com/ScriptReference/SceneManagement.SceneManager-sceneLoaded.html
+        /// </summary>
+        /// <param name="p_scene">Scene content in Unity - Data Structure</param>
+        /// <param name="p_mode">Type of Scene loads. Single mode loads a standard Unity Scene which then appears on its own in the Hierarchy window. Additive loads a Scene which appears in the Hierarchy window while another is active.</param>
+        protected void OnLoadedLevel(Scene p_scene, LoadSceneMode p_mode)
+        {
+            /**
+             * <(!) Suscription to SceneManager.sceneLoaded
+             * Add a delegate to this to get notifications when a Scene has loaded.
+             * Rather than being called directly this script code shows use of a delegate.
+             * NOTE: It's necessery waiting for all components are loaded for load scene's levels.
+             */
+            if (p_scene.name != this.m_levels[this.m_currentLevel])
+                return;
+#if GAME_DEBUG
+            //SCENES LOADED STATUS//
+            Scene l_scene = SceneManager.GetActiveScene();
+            Scene l_levelScene = SceneManager.GetSceneByName(m_levels[m_currentLevel]);
+            Debug.Log($"<DEBUG>Loaded Scene qty: {SceneManager.loadedSceneCount}");
+            Debug.Log($"<DEBUG>Level Scene is loaded: {l_levelScene.isLoaded}");
+#endif
+            this.SetupLevel();
         }
 
         /////////////////////////
@@ -69,15 +117,14 @@ namespace System.Game
         /// <param name="p_levelID">Level Index</param>
         protected void Active(int p_levelID)
         {
-            if (p_levelID < 0 || p_levelID > m_levels.Count)
+            if (p_levelID < 0 || p_levelID > this.m_levels.Count)
             {
                 Debug.LogWarning($"(!) Scene Level didn't load by out-rangue index. > {p_levelID}");
                 return;
             }
 
-            //m_levels[p_levelID].SetActive(true);
-            SceneManager.LoadSceneAsync(m_levels[p_levelID], LoadSceneMode.Additive);
-            m_currentLevel = p_levelID;
+            SceneManager.LoadSceneAsync(this.m_levels[p_levelID], LoadSceneMode.Additive);
+            this.m_currentLevel = p_levelID;
         }
 
         /// <summary>
@@ -86,82 +133,15 @@ namespace System.Game
         /// <param name="p_levelID">Level Index</param>
         protected void Inactive(int p_levelID)
         {
-            if (p_levelID <= 0 || p_levelID > m_levels.Count)
+            if (p_levelID <= 0 || p_levelID > this.m_levels.Count)
             {
                 Debug.LogWarning($"(!) Scene Level didn't unload by out-rangue index. > {p_levelID}");
                 return;
             }
 
-            //m_levels[p_levelID].SetActive(false);
-            SceneManager.UnloadSceneAsync(m_levels[p_levelID]);
+            SceneManager.UnloadSceneAsync(this.m_levels[p_levelID]);
         }
 
-        //////////////////////////////
-        /// LEVELS MANAGERS METHODS
-        /////////////////////////////
-
-        /// <summary>
-        /// It moves to the next level
-        /// </summary>
-        public bool NextLevel()
-        {
-            if ((m_currentLevel + 1) >= m_levels.Count)
-            {
-                return false;
-            }
-
-            if (m_currentLevel != 0) //<(e) The game scene is Game Scene = id0
-                Inactive(m_currentLevel);
-
-            m_currentLevel++;
-            Active(m_currentLevel);
-
-            return true;
-        }
-
-        public bool GoToLevel(uint p_lvlID)
-        {
-            if (p_lvlID > m_levels.Count || p_lvlID <= 0)
-            {
-                Debug.LogWarning($"<DEBUG> Attempt to go to out-rangue level! Out-rangue Level-ID:{p_lvlID}. Don't use ID0 because it is used by system.!");
-
-                return false;
-            }
-
-            if (m_currentLevel != 0) //<(e) The game scene is Game Scene = id0
-                Inactive(m_currentLevel);
-
-            m_currentLevel = (int)p_lvlID;
-            Active(m_currentLevel);
-
-            return true;
-        }
-
-        /// <summary>
-        /// Load level configuration to game scene when this loaded
-        /// Source: https://docs.unity3d.com/ScriptReference/SceneManagement.SceneManager-sceneLoaded.html
-        /// </summary>
-        /// <param name="p_scene"></param>
-        /// <param name="p_mode"></param>
-        public void OnLoadedLevel(Scene p_scene, LoadSceneMode p_mode)
-        {
-            /**
-             * <(!) Suscription to SceneManager.sceneLoaded
-             * Add a delegate to this to get notifications when a Scene has loaded.
-             * Rather than being called directly this script code shows use of a delegate.
-             * NOTE: It's necessery waiting for all components are loaded for load scene's levels.
-             */
-            if (p_scene.name != m_levels[m_currentLevel])
-                return;
-#if GAME_DEBUG
-            //SCENES LOADED STATUS//
-            Scene l_scene = SceneManager.GetActiveScene();
-            Scene l_levelScene = SceneManager.GetSceneByName(m_levels[m_currentLevel]);
-            Debug.Log($"<DEBUG>Loaded Scene qty: {SceneManager.loadedSceneCount}");
-            Debug.Log($"<DEBUG>Level Scene is loaded: {l_levelScene.isLoaded}");
-#endif
-            SetupLevel();
-        }
 
         ////////////////////////
         /// SETUPS
@@ -171,19 +151,19 @@ namespace System.Game
         /// Config level and player data object
         /// </summary>
         /// <returns></returns>
-        public bool SetupLevel()
+        protected bool SetupLevel()
         {
             // Setups //
             Level l_level = GameObject.FindFirstObjectByType<Level>(); //<(i) Search playable level data: start-point, goal-point, etc.
 
             if (l_level == null)
             {
-                Debug.LogWarning($"Not found data-level in {SceneManager.GetSceneAt(m_currentLevel).name} scene. The scene isn't configured!");
+                Debug.LogWarning($"Not found data-level in {SceneManager.GetSceneAt(this.m_currentLevel).name} scene. The scene isn't configured!");
                 return false;
             }
 
-            SetupPlayer(l_level);
-            SetupCamera(l_level);
+            this.SetupPlayer(l_level);
+            this.SetupCamera(l_level);
 
             return true;
         }
@@ -191,13 +171,13 @@ namespace System.Game
         /// <summary>
         /// Config main camera with Level Data in Game scene follower-camera component
         /// </summary>
-        public bool SetupCamera(Level p_level)
+        protected bool SetupCamera(Level p_level)
         {
             //Load main camera bounds and position
             GameObject l_bounds = GameObject.FindWithTag("tCameraBounds");//GameObject.FindGameObjectWithTag("tCameraBounds");
             if (l_bounds == null)
             {
-                Debug.LogWarning($"Not found main-camera bounds for the level in {SceneManager.GetSceneAt(m_currentLevel).name} scene!");
+                Debug.LogWarning($"Not found main-camera bounds for the level in {SceneManager.GetSceneAt(this.m_currentLevel).name} scene!");
                 return false;
             }
 
@@ -214,7 +194,7 @@ namespace System.Game
         /// <summary>
         /// Config Player Level Data in Game scene components
         /// </summary>
-        public bool SetupPlayer(Level p_level)
+        protected bool SetupPlayer(Level p_level)
         {
             //<(i) It's a method from Generic -Object- Class => Object.FindFirstObjectByType =>
             // In Documentation doesn't notice about You can search inactive objects!
@@ -226,7 +206,7 @@ namespace System.Game
             //if (l_player == null || !l_player.activeSelf)
             if (l_player == null)
             {
-                Debug.LogWarning($"Player isn't active for the level in {SceneManager.GetSceneAt(m_currentLevel).name} scene. It couldn't be configured!");
+                Debug.LogWarning($"Player isn't active for the level in {SceneManager.GetSceneAt(this.m_currentLevel).name} scene. It couldn't be configured!");
                 return false;
             }
             else
@@ -247,6 +227,133 @@ namespace System.Game
                 Debug.LogWarning("<DEBUG> Level component isn't loaded for Player Experience Manager!");
 
             return true;
+        }
+
+        //////////////////////////////
+        /// LEVELS MANAGER METHODS
+        /////////////////////////////
+        public void ReloadLevel()
+        {
+            this.m_reloaded = true;
+            SceneManager.UnloadSceneAsync(this.m_levels[this.m_currentLevel]);
+            SceneManager.LoadScene(this.m_levels[this.m_currentLevel], LoadSceneMode.Additive);
+            Debug.Log("<DEBUG> RELOADED SCENE!");
+        }
+
+        /// <summary>
+        /// It moves to the next level
+        /// </summary>
+        public bool NextLevel()
+        {
+            if ((this.m_currentLevel + 1) >= this.m_levels.Count)
+            {
+                return false;
+            }
+
+            if (this.m_currentLevel != 0) //<(e) The game scene is Game Scene = id0
+                this.Inactive(this.m_currentLevel);
+
+            this.m_currentLevel++;
+            this.Active(this.m_currentLevel);
+            this.m_reloaded = false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// It moves to specific level
+        /// </summary>
+        /// <param name="p_lvlID">Index level on Level Manager</param>
+        /// <returns></returns>
+        public bool GoToLevel(uint p_lvlID)
+        {
+            if (p_lvlID > this.m_levels.Count || p_lvlID <= 0)
+            {
+                Debug.LogWarning($"<DEBUG> Attempt to go to out-rangue level! Out-rangue Level-ID:{p_lvlID}. Don't use ID0 because it is used by system.!");
+                return false;
+            }
+
+            if (this.m_currentLevel != 0) //<(e) The game scene is Game Scene = id0
+                this.Inactive(this.m_currentLevel);
+
+            this.m_currentLevel = (int)p_lvlID;
+            this.Active(this.m_currentLevel);
+            this.m_reloaded = false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// It moves to Main Menu Scene
+        /// </summary>
+        public void GoToMain()
+        {
+            this.GoToLevel(1);
+        }
+
+        /// <summary>
+        /// It adds Report Stage Clear Scene
+        /// </summary>
+        public void GoToReport()
+        {
+            SceneManager.LoadSceneAsync("Report", LoadSceneMode.Additive);
+        }
+
+        /// <summary>
+        /// It adds Report Stage Clear Scene
+        /// </summary>
+        public void ActiveEnding()
+        {
+            Scene l_scene = SceneManager.GetSceneByName("Ending");
+            if (l_scene.IsValid())//<(!) It is used to don't twice active the scene
+                return;
+
+            this.Inactive(this.m_currentLevel);
+            SceneManager.LoadSceneAsync("Ending", LoadSceneMode.Additive);
+        }
+
+        /// <summary>
+        /// Ends the level
+        /// </summary>
+        public bool FinishCurrentLevel()
+        {
+            LevelData l_data = this.GetLevelData();
+            if (l_data != null && l_data.ShowStageClear)
+            {
+                this.GoToReport();
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// A simple Scene Unloader 
+        /// </summary>
+        /// <param name="p_name">Scene name</param>
+        /// <returns>False if the scene manager didn't found the scene</returns>
+        public bool UnloadSceneByName(string p_name)
+        {
+            Scene l_scene = SceneManager.GetSceneByName(p_name);
+            if (l_scene == null)
+                return false;
+
+            SceneManager.UnloadSceneAsync(l_scene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
+            return true;
+        }
+
+        /// <summary>
+        /// A simple Scene loader 
+        /// </summary>
+        /// <param name="p_name">Scene name</param>
+        public void LoadSceneByName(string p_name)
+        {
+            SceneManager.LoadSceneAsync(p_name, LoadSceneMode.Additive);
+        }
+
+        public void ActiveMain()
+        {
+            this.Active(1);
         }
     }
 } //namespace System.Game
