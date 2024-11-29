@@ -21,7 +21,7 @@ MonoBehaviour:
   m_goalPoint: {x: 9.55, y: 0.5}
   m_defaultCameraPosition: {x: 0, y: -3, z: -12}
   m_showReport: 0
-  m_audioClipGameplay: {fileID: 8300000, guid: 87943ae6b1ee1144fb2f012f43ba2a46, type: 3}
+  m_audioClipGameplay: {fileID: 8300000, guid: c7db89ef88fc77f4fa3120d79e66a030, type: 3}
   m_showStageRound: 1
-  m_audioClipStageRound: {fileID: 8300000, guid: eb3b5355f52b9654b8ffa5da2606dce2, type: 3}
+  m_audioClipStageRound: {fileID: 8300000, guid: 4b5955fef2c098d4886427848b1939ed, type: 3}
   m_waitTime: 3.5

@@ -99,7 +99,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_camera: {fileID: 0}
   m_jukebox: {fileID: 3665393432510735407}
-  m_thunderSfx: {fileID: 8300000, guid: caa0bf5f943587e4caf9e652a4a60481, type: 3}
+  m_thunderSfx: {fileID: 8300000, guid: 98eae887300f14842b774d51f3221ea1, type: 3}
   m_lapse: 8.03
   m_color: {r: 1, g: 0.9838133, b: 0.7311321, a: 1}
   m_autoPlay: 1

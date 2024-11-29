@@ -3159,14 +3159,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b8d936f197d3bd46b7492e9374e4018, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_goalCounter: {fileID: 0}
-  m_goalRequire: {fileID: 0}
+  m_goalCounter: {fileID: 5296351626091863570}
+  m_goalRequire: {fileID: 235778912838320866}
   m_soulsCounter: {fileID: 2027863020099431167}
   m_lifesCounter: {fileID: 1771925043508110854}
   m_tunasCounter: {fileID: 4514721327810849485}
   m_timer: {fileID: 1224212240897609218}
-  m_score: {fileID: 0}
-  m_hiscore: {fileID: 0}
+  m_score: {fileID: 501197211203304681}
+  m_hiscore: {fileID: 7745122332057378892}
 --- !u!1 &8977611299731331206
 GameObject:
   m_ObjectHideFlags: 0

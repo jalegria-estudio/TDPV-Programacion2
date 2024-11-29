@@ -176,11 +176,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_lifes: 5
   m_bossScore: 1500
-  m_GhostyScore: 100
-  m_sfxScare: {fileID: 8300000, guid: c644758ac269d344c9ae689731bb4e6e, type: 3}
-  m_sfxKnockOut: {fileID: 8300000, guid: 48794f579eb4eea4ab9fabfd91f7b487, type: 3}
-  m_sfxAngry: {fileID: 8300000, guid: 21c40252c96fc3e4aa9e5d1f896c4419, type: 3}
-  m_sfxSad: {fileID: 8300000, guid: 7e2bb2a0ae1fde44dbc9084ee433a92a, type: 3}
+  m_ghostyScore: 100
+  m_sfxScare: {fileID: 8300000, guid: ab5e38655538e0b45bf9e2cfb6476689, type: 3}
+  m_sfxKnockOut: {fileID: 8300000, guid: 27d922de6f7558e478422808d32d713d, type: 3}
+  m_sfxAngry: {fileID: 8300000, guid: 7413cbb9b37571e46912f9f00e9064f4, type: 3}
+  m_sfxSad: {fileID: 8300000, guid: dd8fa3e9a0e0c4f41922a5fe6e5f0c2c, type: 3}
   m_poolSize: 4
   m_ghosty: {fileID: 3263721594297735653, guid: 4c3cb1e075256864fa157a81834ca414, type: 3}
 --- !u!82 &2783936306864733891
