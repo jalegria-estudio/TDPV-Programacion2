@@ -240,16 +240,16 @@ MonoBehaviour:
   m_end: {fileID: 1636509117}
   m_picture: {fileID: 1566395966}
   m_bgdDefault: {fileID: 21300000, guid: dda4037ebb916484694274244871c6a0, type: 3}
-  m_bgdGameOver: {fileID: 21300000, guid: b7b002d3c0edffb4f8a6db47d74b220b, type: 3}
-  m_bgdGameWin: {fileID: 21300000, guid: 7886397c09820fc4488d408a988e0618, type: 3}
+  m_bgdGameOver: {fileID: 21300000, guid: 73f89ec24a157384c8933e41bca0d129, type: 3}
+  m_bgdGameWin: {fileID: 21300000, guid: 51b0ba99c5076694abe5eeeb98c9ec4d, type: 3}
   m_textColorWin: {r: 1, g: 0.56078434, b: 0.2784314, a: 1}
   m_textColorLose: {r: 0.5019608, g: 0.74509805, b: 0.23137255, a: 1}
-  m_sfxDefault: {fileID: 8300000, guid: de60488925a6080468e58d9b66b2816e, type: 3}
-  m_gfxWin: {fileID: 21300000, guid: 372dfe23f2a53ce4088c7c44da5c8e38, type: 3}
+  m_sfxDefault: {fileID: 8300000, guid: b7d06bdac5f09ee47ae4aa03fd6c5b07, type: 3}
+  m_gfxWin: {fileID: 21300000, guid: 83ee9b66315465b42b069e6d569384f5, type: 3}
   m_txtWin: Our feline Guardian was a hero! He returned all the ghosts to their original
     places and restored peace to the entire area. Finally, the humans gave him a
     pet nickname... The Spiritual 'Little Paws' Guardian!
-  m_gfxLose: {fileID: 21300000, guid: 841dcfce8617a624f85c2a4858f25bec, type: 3}
+  m_gfxLose: {fileID: 21300000, guid: 528a4baa9a18e1c459b18737d8464667, type: 3}
   m_txtLose: Exhausted and weakened, our feline Guardian had to retreat, leaving
     his mission incomplete and the ghosts free to spooky haunt...
 --- !u!114 &1636509117 stripped
